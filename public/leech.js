@@ -1,5 +1,8 @@
 var leechQuery = "";
 var leechSearchId = "";
+var leechHits = 0;
+var leechLatency = 0;
+var leechTimeoutId = 0;
 
 var log = function(msg) {
   console.log("app=leech ns=js " + msg);
@@ -41,25 +44,40 @@ function leechUpdate() {
       type: "GET",
       url: "/search",
       success: function(data, status, xhr) {
-        log("fn=update at=finish search_id=" + leechSearchId + " elapsed=" (millis() - start));
+        log("fn=update at=finish search_id=" + leechSearchId);
         leechApply(data);
+      },
+      complete: function(status, xhr) {
+        var elapsed = millis() - start;
+        log("fn=update at=finish search_id=" + leechSearchId + " elapsed=" + elapsed);
+        leechHits += 1;
+        leechLatency = elapsed;
+        leechTimeoutId = setTimeout(leechUpdate, 500);
       }
     });
   }
 }
 
+function leechUpdateNow() {
+  log("fn=update_now at=start");
+  clearTimeout(leechTimeoutId);
+  leechUpdate();
+  log("fn=update_now at=finish");
+}
+
 function leechSubmit() {
-  log("fn=submit at=start")
+  log("fn=submit at=start");
   var leechQueryNew = $("#query input").val();
   if (leechQueryNew.match(/^\s*$/)) {
-    leechQuery = leechQueryNew;
     leechSearchId = "";
     $("#results").empty();
   } else if (leechQueryNew != leechQuery) {
     leechQuery = leechQueryNew;
     leechSearchId = uuid();
+    leechHits = 0;
+    leechLatency = 0;
     $("#results").empty();
-    leechUpdate();
+    leechUpdateNow();
   }
   log("fn=submit at=finish");
   return false;
@@ -69,7 +87,6 @@ function leechStart() {
   log("fn=start at=start");
   $("#query form").ajaxForm({beforeSubmit: leechSubmit});
   leechUpdate();
-  setInterval(leechUpdate, 500);
   log("fn=start at=finish");
 }
 
