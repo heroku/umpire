@@ -53,7 +53,7 @@ module LeechWeb
         log(merge(data, at: "finish", elapsed: (Time.now - start)))
         ret
       else
-        write(merge({app: "dash", deploy: Config.deploy}, data))
+        write(merge({app: "leech-web", deploy: Config.deploy}, data))
       end
     end
 
