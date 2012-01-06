@@ -74,7 +74,7 @@ module LeechWeb
       end
       events = result[1]
       headers("Content-Type" => "application/json")
-      JSON.dump(events)
+      "[#{events.joins(", ")}]"
     end
 
     def authorize!
