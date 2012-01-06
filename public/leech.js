@@ -72,13 +72,14 @@ function leechSubmit() {
   if (leechQueryNew.match(/^\s*$/)) {
     leechSearchId = "";
     $("#results").empty();
+    $("#status").text("(_ / _)");
   } else if (leechQueryNew != leechQuery) {
     leechQuery = leechQueryNew;
     leechSearchId = uuid();
     leechHits = 0;
     leechLatency = 0;
     $("#results").empty();
-    $("#status").text("(_ / _)");
+    $("#status").text("(0 / 0)");
     leechUpdateNow();
   }
   log("fn=submit at=finish");
