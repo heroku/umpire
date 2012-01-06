@@ -77,6 +77,11 @@ module LeechWeb
       "[#{events.join(", ")}]"
     end
 
+    get "/health" do
+      headers("Content-Type" => "application/json")
+      JSON.dump({"status" => "ok"})
+    end
+
     def authorize!
       redirect("/auth/google") if !session["authorized"]
     end
