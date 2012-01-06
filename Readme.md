@@ -1,6 +1,10 @@
 # Leech Web
 
-User-facing web interface for the [Leech drain](https://github.com/heroku/leech-drain).
+## Overview
+
+Leech provides web-accessible, real-time filtered views of the Heroku event stream. This provides instant visibility into specific aspects of the Heroku infrastructure and its operations. Leech replaces manual log tailing and filtering.
+
+The Leech web component serves the user-facing web page and associated requests. It is complemented by the [Leech drain](https://github.com/heroku/leech-drain) component.
 
 
 ## Local deploy
