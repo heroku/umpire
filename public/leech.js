@@ -30,6 +30,7 @@ function leechApply(evs) {
     $.each(evs, function(i, ev) {
       results.append(leechInflate(ev));
     });
+    $("#status").text("(" + leechLatency + " / " + leechHits + ")");
     log("fn=apply at=finish");
   }
 }
@@ -44,7 +45,7 @@ function leechUpdate() {
       type: "GET",
       url: "/search",
       success: function(data, status, xhr) {
-        log("fn=update at=finish search_id=" + leechSearchId);
+        log("fn=update at=finish search_id=" + leechSearchId + " num=" + data.length);
         leechApply(data);
       },
       complete: function(status, xhr) {
@@ -77,6 +78,7 @@ function leechSubmit() {
     leechHits = 0;
     leechLatency = 0;
     $("#results").empty();
+    $("#status").text("(_ / _)");
     leechUpdateNow();
   }
   log("fn=submit at=finish");

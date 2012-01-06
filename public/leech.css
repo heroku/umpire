@@ -65,8 +65,15 @@ body {
   margin-left: 1em;
 }
 
+#status {
+  color: grey;
+  font-size: 2em;
+  margin-left: 0.25em;
+}
+
 #query form {
   margin-left: 0.25em;
+  display: inline;
 }
 
 #query input {
