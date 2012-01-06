@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+
+$:.unshift(File.expand_path(File.join(File.dirname($0), "../lib")))
+require "leech_web/log"
+require "irb"
+
+LeechWeb::Log.start
+IRB.start

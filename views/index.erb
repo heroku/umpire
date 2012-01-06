@@ -1,0 +1,20 @@
+<html>
+  <head>
+    <title>Leech</title>
+    <link rel="stylesheet" media="screen" type="text/css" href="/leech.css" />
+    <script type="text/javascript">var leechSearchId = "<%= @leech_search_id %>";</script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.3/jquery.js"></script>
+    <script type="text/javascript" src="/jquery.form.js"></script>
+    <script type="text/javascript" src="/leech.js"></script>
+  </head>
+  <body>
+    <div id="contents">
+      <div id="query">
+        <form action="/search" method="GET">
+          <input type="text" name="query" />
+        </form>
+      </div>
+      <div id="results"></div>
+    </div>
+  </body>
+</html>
