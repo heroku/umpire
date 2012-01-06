@@ -62,11 +62,12 @@ module LeechWeb
     get "/search" do
       authorize!
       events_key = "searches.#{params[:search_id]}.events"
-      query = params[:query]
+      search_data = {"search_id" => params[:search_id], "query" => params[:query], "events-key" => events_key}
+      search_str = JSON.dump(search_data)
       t = (Time.now.to_f * 1000).to_i
       result = log(fn: "hit_redis") do
         redis.multi do
-          redis.zadd("searches", t, query)
+          redis.zadd("searches", t, search_str)
           redis.lrange(events_key, 0, 100000)
           redis.ltrim(events_key, 100000, -1)
         end
