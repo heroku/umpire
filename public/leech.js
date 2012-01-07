@@ -20,7 +20,7 @@ function uuid() {
 }
 
 function leechInflate(ev) {
-  return "<p class=\"" + ev.component + "\">" + ev.line + "</p>";
+  return "<p class=\"" + ev.source + "\">" + ev.line + "</p>";
 }
 
 function leechApply(evs) {
