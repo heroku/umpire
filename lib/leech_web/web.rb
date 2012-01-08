@@ -62,7 +62,7 @@ module LeechWeb
     get "/search" do
       authorize!
       events_key = "searches.#{params[:search_id]}.events"
-      search_data = {"search-id" => params[:search_id], "events-key" => events_key, "query" => params[:query]}
+      search_data = {"search_id" => params[:search_id], "events_key" => events_key, "query" => params[:query]}
       search_str = JSON.dump(search_data)
       t = (Time.now.to_f * 1000).to_i
       result = log(fn: "hit_redis") do
