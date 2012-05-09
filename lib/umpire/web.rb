@@ -62,7 +62,7 @@ module Umpire
 
     get "/health" do
       status 200
-      JSON.dump({"status" => "ok"}) + "\n"
+      JSON.dump({"health" => "ok"}) + "\n"
     end
 
     not_found do

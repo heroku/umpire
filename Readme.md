@@ -2,7 +2,7 @@
 
 ## Overview
 
-Check metrics.
+Umpire provides a normalized HTTP endpoint
 
 
 ## Local Deploy
@@ -32,4 +32,13 @@ $ heroku config:add -r $DEPLOY GRAPHTIE_URL=https://you.graphite.com
 $ git push $DEPLOY master
 $ heroku scale -r $DEPLOY web=3
 $ curl -i "https://umpire:$API_KEY@umpire-$DEPLOY.herokuapp.com/check?metric=pulse.nginx-requests-per-second&max=6000&span=300"
+```
+
+
+## Health
+
+Check the health of the Umpire process itself with:
+
+```bash
+$ curl -i http://127.0.0.1:5000/health
 ```
