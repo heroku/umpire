@@ -38,8 +38,7 @@ module Umpire
       min = (params["min"] && params["min"].to_i)
       max = (params["max"] && params["max"].to_i)
       range = (params["range"] && params["range"].to_i)
-      range ||= 300
-      if !(metric && (min || max))
+      if !(metric && (min || max) && range)
         status 400
         JSON.dump({"error" => "missing parameters"}) + "\n"
       else
