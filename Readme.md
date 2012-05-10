@@ -2,7 +2,7 @@
 
 ## Overview
 
-Umpire provides a normalized HTTP endpoint that responds with 200 / non-200 according to the metric check parameters specified in the requested URL. This endpoint can then be composed with existing HTTP-URL-monitoring tools like [Pingdom](http://www.pingdom.com) to enable self-service QoS monitor of metrics.
+Umpire provides a normalized HTTP endpoint that responds with 200 / non-200 according to the metric check parameters specified in the requested URL. This endpoint can then be composed with existing HTTP-URL-monitoring tools like [Pingdom](http://www.pingdom.com) or [MaaS](https://github.com/heroku/maas) to enable self-service QoS monitor of metrics.
 
 
 ## Usage Examples
