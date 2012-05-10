@@ -13,13 +13,13 @@ Grab an `UMPIRE_URL` that you can use to query against:
 $ export UMPIRE_URL=https://u:$(heroku sudo config -s -a umpire-production | grep API_KEY | cut -d= -f2)@umpire.herokai.com
 ```
 
-To respond with 200 iff the `pulse.nginx-requests-per-second` metric has had an average value of less than 9000 over the last 300 seconds:
+To respond with 200 if the `pulse.nginx-requests-per-second` metric has had an average value of less than 9000 over the last 300 seconds:
 
 ```bash
 $ curl -i "$UMPIRE_URL/check?metric=pulse.nginx-requests-per-second&max=9000&range=300"
 ```
 
-To respond with 200 iff the `custom.api.production.requests.per-sec` metric has had an average value of more than 40 over the past 60 seconds:
+To respond with 200 if the `custom.api.production.requests.per-sec` metric has had an average value of more than 40 over the past 60 seconds:
 
 ```bash
 $ curl -i "$UMPIRE_URL/check?metric=custom.api.production.requests.per-sec&min=40&range=60"
@@ -50,7 +50,7 @@ $ heroku create -s cedar -r $DEPLOY umpire-$DEPLOY
 $ heroku config:add -r $DEPLOY DEPLOY=$DEPLOY
 $ heroku config:add -r $DEPLOY FORCE_HTTPS=true
 $ heroku config:add -r $DEPLOY API_KEY=$API_KEY
-$ heroku config:add -r $DEPLOY GRAPHTIE_URL=https://you.graphite.com
+$ heroku config:add -r $DEPLOY GRAPHITE_URL=https://you.graphite.com
 $ git push $DEPLOY master
 $ heroku scale -r $DEPLOY web=3
 $ export UMPIRE_URL=https://umpire:$API_KEY@umpire-$DEPLOY.herokuapp.com
