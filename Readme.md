@@ -63,5 +63,5 @@ $ curl -i "$UMPIRE_URL/check?metric=pulse.nginx-requests-per-second&max=9000&ran
 Check the health of the Umpire process itself with:
 
 ```bash
-$ curl -i http://127.0.0.1:5000/health
+$ curl -i "$UMPIRE_URL/health"
 ```
