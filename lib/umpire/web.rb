@@ -35,8 +35,8 @@ module Umpire
     get "/check" do
       protected!
       metric = params["metric"]
-      min = (params["min"] && params["min"].to_i)
-      max = (params["max"] && params["max"].to_i)
+      min = (params["min"] && params["min"].to_f)
+      max = (params["max"] && params["max"].to_f)
       range = (params["range"] && params["range"].to_i)
       if !(metric && (min || max) && range)
         status 400
