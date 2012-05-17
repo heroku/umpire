@@ -52,8 +52,8 @@ module Umpire
         else
           points = data.first["datapoints"].map { |v, _| v }.compact
           if points.empty?
-            status 200
-            JSON.dump({"value" => nil}) + "\n"
+            status 404
+            JSON.dump({"error" => "no values for metric in range"}) + "\n"
           else
             value = (points.reduce { |a,b| a+b }) / points.size.to_f
             if ((min && (value < min)) || (max && (value > max)))
@@ -104,7 +104,10 @@ module Umpire
     end
 
     def self.log(data, &blk)
+      data.delete(:level)
       Log.log(Log.merge({ns: "web"}, data), &blk)
     end
   end
 end
+
+Instruments.defaults = {logger: Umpire::Web, method: :log}
