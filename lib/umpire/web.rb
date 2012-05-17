@@ -10,6 +10,8 @@ require "restclient"
 
 module Umpire
   class Web < Sinatra::Base
+    enable :dump_errors
+    disable :show_exceptions
     use Rack::SslEnforcer if Config.force_https?
     register Sinatra::Instrumentation
     instrument_routes
