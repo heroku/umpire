@@ -50,13 +50,18 @@ module Umpire
           JSON.dump({"error" => "metric not found"}) + "\n"
         else
           points = data.first["datapoints"].map { |v, _| v }.compact
-          value = (points.reduce { |a,b| a+b }) / points.size.to_f
-          if ((min && (value < min)) || (max && (value > max)))
-            status 500
-          else
+          if points.empty?
             status 200
+            JSON.dump({"value" => nil}) + "\n"
+          else
+            value = (points.reduce { |a,b| a+b }) / points.size.to_f
+            if ((min && (value < min)) || (max && (value > max)))
+              status 500
+            else
+              status 200
+            end
+            JSON.dump({"value" => value}) + "\n"
           end
-          JSON.dump({"value" => value}) + "\n"
         end
       end
     end
