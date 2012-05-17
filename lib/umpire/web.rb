@@ -8,6 +8,7 @@ require "uuidtools"
 require "instruments"
 require "restclient"
 
+
 module Umpire
   class Web < Sinatra::Base
     enable :dump_errors
