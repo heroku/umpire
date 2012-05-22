@@ -41,6 +41,7 @@ module Umpire
       min = (params["min"] && params["min"].to_f)
       max = (params["max"] && params["max"].to_f)
       range = (params["range"] && params["range"].to_i)
+      empty_ok = params["empty_ok"]
       if !(metric && (min || max) && range)
         status 400
         JSON.dump({"error" => "missing parameters"}) + "\n"
@@ -52,7 +53,7 @@ module Umpire
         else
           points = data.first["datapoints"].map { |v, _| v }.compact
           if points.empty?
-            status 404
+            status empty_ok ? 200 : 404
             JSON.dump({"error" => "no values for metric in range"}) + "\n"
           else
             value = (points.reduce { |a,b| a+b }) / points.size.to_f
