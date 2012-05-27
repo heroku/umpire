@@ -73,10 +73,10 @@ module Umpire
       JSON.dump({"health" => "ok"}) + "\n"
     end
 
-    not_found do
-      status 404
-      JSON.dump({"error" => "not found"}) + "\n"
-    end
+   get "/*" do
+     status 404
+     JSON.dump({"error" => "not found"}) + "\n"
+   end
 
     error do
       status 500
