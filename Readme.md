@@ -36,7 +36,7 @@ $ export FORCE_HTTPS=false
 $ export API_KEY=secret
 $ export GRAPHITE_URL=https://graphite.you.com
 $ foreman start
-$ export UMPIRE_URL=http://umpire:$API_KEY@127.0.0.1:5000
+$ export UMPIRE_URL=http://umpire:secret@127.0.0.1:5000
 $ curl -i "$UMPIRE_URL/check?metric=pulse.nginx-requests-per-second&max=9000&range=300"
 ```
 
