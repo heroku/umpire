@@ -13,10 +13,10 @@ Grab an `UMPIRE_URL` that you can use to query against:
 $ export UMPIRE_URL=https://u:$(heroku sudo config -s -a umpire-production | grep API_KEY | cut -d= -f2)@umpire.herokai.com
 ```
 
-To respond with 200 if the `pulse.nginx-requests-per-second` metric has had an average value of less than 9000 over the last 300 seconds:
+To respond with 200 if the `pulse.nginx-requests-per-second` metric has had an average value of less than 400 over the last 300 seconds:
 
 ```bash
-$ curl -i "$UMPIRE_URL/check?metric=pulse.nginx-requests-per-second&max=9000&range=300"
+$ curl -i "$UMPIRE_URL/check?metric=pulse.nginx-requests-per-second&max=400&range=300"
 ```
 
 To respond with 200 if the `custom.api.production.requests.per-sec` metric has had an average value of more than 40 over the past 60 seconds:
@@ -37,7 +37,7 @@ $ export API_KEY=secret
 $ export GRAPHITE_URL=https://graphite.you.com
 $ foreman start
 $ export UMPIRE_URL=http://umpire:secret@127.0.0.1:5000
-$ curl -i "$UMPIRE_URL/check?metric=pulse.nginx-requests-per-second&max=9000&range=300"
+$ curl -i "$UMPIRE_URL/check?metric=pulse.nginx-requests-per-second&max=400&range=300"
 ```
 
 
@@ -54,7 +54,7 @@ $ heroku config:add -r $DEPLOY GRAPHITE_URL=https://you.graphite.com
 $ git push $DEPLOY master
 $ heroku scale -r $DEPLOY web=3
 $ export UMPIRE_URL=https://umpire:$API_KEY@umpire-$DEPLOY.herokuapp.com
-$ curl -i "$UMPIRE_URL/check?metric=pulse.nginx-requests-per-second&max=9000&range=300"
+$ curl -i "$UMPIRE_URL/check?metric=pulse.nginx-requests-per-second&max=400&range=300"
 ```
 
 
