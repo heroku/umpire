@@ -10,7 +10,7 @@ Umpire provides a normalized HTTP endpoint that responds with 200 / non-200 acco
 Grab an `UMPIRE_URL` that you can use to query against:
 
 ```bash
-$ export UMPIRE_URL=https://u:$(heroku config -a umpire-production | grep API_KEY | awk '{print $3}')@umpire.yourdomain.com
+$ export UMPIRE_URL=https://u:$(heroku config:get API_KEY -a umpire-production)@umpire.yourdomain.com
 ```
 
 To respond with 200 if the `pulse.nginx-requests-per-second` metric has had an average value of less than 400 over the last 300 seconds:
