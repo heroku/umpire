@@ -49,6 +49,12 @@ module Umpire
           get "/check?metric=foo.bar&range=60&max=100&empty_ok=true"
           last_response.status.should eq(200)
         end
+
+        it "should return data if there is data" do
+          Graphite.stub(:get_values_for_range) { [1] }
+          get "/check?metric=foo.bar&range=60&max=100&empty_ok=true"
+          last_response.body.should eq({'value' => 1.0}.to_json + "\n")
+        end
       end
     end
   end
