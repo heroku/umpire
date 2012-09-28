@@ -10,6 +10,7 @@ gem "rest-client", "1.6.7"
 gem "scrolls", "0.1.0"
 
 group :development do
+  gem "rack-test"
   gem "rspec"
   gem "webmock"
 end
