@@ -60,6 +60,9 @@ module Umpire
         rescue MetricNotFound
           status 404
           JSON.dump({"error" => "metric not found"}) + "\n"
+        rescue MetricServiceRequestFailed
+          status 503
+          JSON.dump({"error" => "connecting to Graphite service failed with error 'request timed out'"}) + "\n"
         end
       end
     end
