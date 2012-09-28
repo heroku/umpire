@@ -5,5 +5,4 @@ require "umpire"
 require "umpire/log"
 require "umpire/web"
 
-Umpire::Log.start
 Umpire::Web.start
