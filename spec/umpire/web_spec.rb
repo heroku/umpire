@@ -55,6 +55,18 @@ module Umpire
           get "/check?metric=foo.bar&range=60&max=100&empty_ok=true"
           last_response.body.should eq({'value' => 1.0}.to_json + "\n")
         end
+
+        it "should return a 500 if the data is out of range" do
+          Graphite.stub(:get_values_for_range) { [1] }
+          get "/check?metric=foo.bar&range=60&min=100"
+          last_response.status.should eq(500)
+        end
+        
+        it "should return a 200 if the data is within range" do
+          Graphite.stub(:get_values_for_range) { [1] }
+          get "/check?metric=foo.bar&range=60&min=1"
+          last_response.should be_ok
+        end
       end
     end
   end
