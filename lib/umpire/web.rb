@@ -1,8 +1,6 @@
 require "sinatra/base"
 require "rack/handler/mongrel"
 require "rack-ssl-enforcer"
-require "umpire/config"
-require "umpire/log"
 require "uuidtools"
 require "instruments"
 

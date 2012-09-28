@@ -3,10 +3,6 @@ require "scrolls"
 
 module Umpire
   module Log
-    def self.start
-      log(ns: "log", fn: "start")
-    end
-
     def self.merge(data1, data2)
       data1.merge(data2)
     end
