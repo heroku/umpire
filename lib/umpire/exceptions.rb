@@ -1,0 +1,1 @@
+class MetricNotFound < Exception ; end

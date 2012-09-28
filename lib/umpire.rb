@@ -1,4 +1,5 @@
 require "json"
-require "rest_client"
+require "restclient"
 
+require "umpire/exceptions"
 require "umpire/graphite"

@@ -24,9 +24,9 @@ describe Umpire::Graphite do
       Umpire::Graphite.get_values_for_range(graphite_url, metric, range).should eq([4.47])
     end
 
-    it "should return an empty array if graphite returns empty data" do
+    it "should raise an exception if graphite returns empty data" do
       stub_request_without_values
-      Umpire::Graphite.get_values_for_range(graphite_url, metric, range).should eq([])
+      lambda { Umpire::Graphite.get_values_for_range(graphite_url, metric, range) }.should raise_error(MetricNotFound)
     end
   end
 end
