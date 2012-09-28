@@ -11,6 +11,7 @@ gem "scrolls", "0.2.3"
 
 group :development do
   gem "rack-test"
+  gem "rake"
   gem "rspec"
   gem "webmock"
 end

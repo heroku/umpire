@@ -12,3 +12,4 @@ end
 ENV["FORCE_HTTPS"] = "false"
 ENV["API_KEY"] = "test"
 ENV["DEPLOY"] = "test"
+ENV["GRAPHITE_URL"] = "https://graphite.example.com"
