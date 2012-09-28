@@ -1,3 +1,5 @@
+require 'webmock/rspec'
+
 require 'umpire'
 
 RSpec.configure do |config|
