@@ -4,7 +4,6 @@ require "scrolls"
 module Umpire
   module Log
     def self.start
-      Scrolls::Log.start
       log(ns: "log", fn: "start")
     end
 
