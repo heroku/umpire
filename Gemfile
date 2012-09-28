@@ -7,4 +7,10 @@ gem "mongrel", "1.2.0.pre2"
 gem "instruments", "0.0.9"
 gem "rack-ssl-enforcer", "0.2.4"
 gem "rest-client", "1.6.7"
-gem "scrolls", "0.1.0"
+gem "scrolls", "0.2.3"
+
+group :development do
+  gem "rack-test"
+  gem "rspec"
+  gem "webmock"
+end
