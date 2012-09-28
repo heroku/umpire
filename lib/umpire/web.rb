@@ -107,4 +107,4 @@ module Umpire
   end
 end
 
-Instruments.defaults = {logger: Umpire::Web, method: :log} unless ENV["RACK_ENV"] == 'test'
+Instruments.defaults = {logger: Umpire::Web, method: :log}
