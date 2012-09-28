@@ -53,7 +53,7 @@ module Umpire
             if ((min && (value < min)) || (max && (value > max)))
               status 500
             else
-              status 200 
+              status 200
             end
           end
         rescue MetricNotFound
