@@ -8,3 +8,7 @@ gem "instruments", "0.0.9"
 gem "rack-ssl-enforcer", "0.2.4"
 gem "rest-client", "1.6.7"
 gem "scrolls", "0.1.0"
+
+group :development do
+  gem "rspec"
+end
