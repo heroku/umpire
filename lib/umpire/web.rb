@@ -55,6 +55,7 @@ module Umpire
             else
               status 200
             end
+            JSON.dump({"value" => value}) + "\n"
           end
         rescue MetricNotFound
           status 404
