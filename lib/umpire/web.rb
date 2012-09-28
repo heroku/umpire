@@ -3,11 +3,8 @@ require "rack/handler/mongrel"
 require "rack-ssl-enforcer"
 require "umpire/config"
 require "umpire/log"
-require "json"
 require "uuidtools"
 require "instruments"
-require "restclient"
-
 
 module Umpire
   class Web < Sinatra::Base
@@ -46,12 +43,8 @@ module Umpire
         status 400
         JSON.dump({"error" => "missing parameters"}) + "\n"
       else
-        data = JSON.parse(RestClient.get("#{Config.graphite_url}/render/?target=#{metric}&format=json&from=-#{range}s"))
-        if (data == [])
-          status 404
-          JSON.dump({"error" => "metric not found"}) + "\n"
-        else
-          points = data.first["datapoints"].map { |v, _| v }.compact
+        begin 
+          points = Graphite.get_values_for_range(Config.graphite_url, metric, range)
           if points.empty?
             status empty_ok ? 200 : 404
             JSON.dump({"error" => "no values for metric in range"}) + "\n"
@@ -60,10 +53,12 @@ module Umpire
             if ((min && (value < min)) || (max && (value > max)))
               status 500
             else
-              status 200
+              status 200 
             end
-            JSON.dump({"value" => value}) + "\n"
           end
+        rescue MetricNotFound
+          status 404
+          JSON.dump({"error" => "metric not found"}) + "\n"
         end
       end
     end
