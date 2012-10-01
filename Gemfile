@@ -1,6 +1,7 @@
 source "https://rubygems.org"
 
 gem "json", "1.5.3"
+gem "librato-metrics", "0.7.0"
 gem "sinatra", "1.2.6"
 gem "mongrel", "1.2.0.pre2"
 gem "instruments", "0.0.9"
