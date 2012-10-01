@@ -36,7 +36,7 @@ module Umpire
       max = (params["max"] && params["max"].to_f)
       range = (params["range"] && params["range"].to_i)
       empty_ok = params["empty_ok"]
-      librato = params["librato"]
+      librato = params["backend"] && params["backend"] == "librato"
 
       if !(metric && (min || max) && range)
         status 400
