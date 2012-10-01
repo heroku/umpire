@@ -9,8 +9,8 @@ module Umpire
         results["all"].map { |h| h["value"] }
       rescue Librato::Metrics::NotFound
         raise MetricNotFound
-      #rescue Exception
-      #  raise MetricServiceRequestFailed
+      rescue Librato::Metrics::NetworkError
+        raise MetricServiceRequestFailed
       end
     end
 
