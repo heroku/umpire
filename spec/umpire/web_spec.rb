@@ -67,6 +67,11 @@ module Umpire
           get "/check?metric=foo.bar&range=60&min=1"
           last_response.should be_ok
         end
+
+        it "should call LibratoMetrics if passed the librato param" do
+          Umpire::LibratoMetrics.should_receive(:get_values_for_range).with('foo.bar', 60) { [] }
+          get "/check?metric=foo.bar&range=60&max=100&librato=true"
+        end
       end
     end
   end

@@ -36,12 +36,18 @@ module Umpire
       max = (params["max"] && params["max"].to_f)
       range = (params["range"] && params["range"].to_i)
       empty_ok = params["empty_ok"]
+      librato = params["librato"]
+
       if !(metric && (min || max) && range)
         status 400
         JSON.dump({"error" => "missing parameters"}) + "\n"
       else
         begin 
-          points = Graphite.get_values_for_range(Config.graphite_url, metric, range)
+          points = if librato
+            LibratoMetrics.get_values_for_range(metric, range)
+          else
+            Graphite.get_values_for_range(Config.graphite_url, metric, range) 
+          end
           if points.empty?
             status empty_ok ? 200 : 404
             JSON.dump({"error" => "no values for metric in range"}) + "\n"
