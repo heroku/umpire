@@ -59,7 +59,7 @@ module Umpire
           JSON.dump({"error" => "metric not found"}) + "\n"
         rescue MetricServiceRequestFailed
           status 503
-          JSON.dump({"error" => "connecting to Graphite service failed with error 'request timed out'"}) + "\n"
+          JSON.dump({"error" => "connecting to backend metrics service failed with error 'request timed out'"}) + "\n"
         end
       end
     end
