@@ -27,6 +27,11 @@ To respond with 200 if the `custom.api.production.requests.per-sec` metric has h
 $ curl -i "$UMPIRE_URL/check?metric=custom.api.production.requests.per-sec&min=40&range=60"
 ```
 
+The default metrics target is Graphite.  If you'd like to check [Librato Metrics](http://metrics.librato.com), just add a `backend=librato` query param:
+
+```bash
+$ curl -i "$UMPIRE_URL/check?metric=custom.api.production.requests.per-sec&min=40&range=60&backend=librato"
+```
 
 ## Local Deploy
 
