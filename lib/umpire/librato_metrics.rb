@@ -6,11 +6,7 @@ module Umpire
       begin
         start_time = Time.now.to_i - range
         results = client.fetch(metric, :start_time => start_time, :summarize_sources => true)
-        if results.has_key?('all')
-          results["all"].map { |h| h["value"] }
-        else
-          []
-        end
+        results.has_key?('all') ? results["all"].map { |h| h["value"] } : []
       rescue Librato::Metrics::NotFound
         raise MetricNotFound
       rescue Librato::Metrics::NetworkError
