@@ -27,6 +27,21 @@ module Umpire
         @auth ||=  Rack::Auth::Basic::Request.new(request.env)
         @auth.provided? && @auth.basic? && @auth.credentials && (@auth.credentials[1] == Config.api_key)
       end
+
+      def create_aggregator(aggregation_method)
+        case aggregation_method
+        when "avg"
+          Aggregator::Avg.new
+        when "sum"
+          Aggregator::Sum.new
+        when "min"
+          Aggregator::Min.new
+        when "max"
+          Aggregator::Max.new
+        else
+          Aggregator::Avg.new
+        end
+      end
     end
 
     get "/check" do
@@ -37,6 +52,7 @@ module Umpire
       range = (params["range"] && params["range"].to_i)
       empty_ok = params["empty_ok"]
       librato = params["backend"] && params["backend"] == "librato"
+      aggregator = create_aggregator(params["aggregate"])
 
       if !(metric && (min || max) && range)
         status 400
@@ -52,7 +68,7 @@ module Umpire
             status empty_ok ? 200 : 404
             JSON.dump({"error" => "no values for metric in range"}) + "\n"
           else
-            value = (points.reduce { |a,b| a+b }) / points.size.to_f
+            value = aggregator.aggregate(points)
             if ((min && (value < min)) || (max && (value > max)))
               status 500
             else
