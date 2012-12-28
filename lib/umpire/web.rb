@@ -1,5 +1,4 @@
 require "sinatra/base"
-require "rack/handler/mongrel"
 require "rack-ssl-enforcer"
 require "instruments"
 
@@ -83,23 +82,6 @@ module Umpire
     error do
       status 500
       JSON.dump({"error" => "internal server error"}) + "\n"
-    end
-
-    def self.start
-      log(fn: "start", at: "build")
-      @server = Mongrel::HttpServer.new("0.0.0.0", Config.port)
-      @server.register("/", Rack::Handler::Mongrel.new(Web.new))
-
-      log(fn: "start", at: "install_trap")
-      Signal.trap("TERM") do
-        log(fn: "trap")
-        @server.stop(true)
-        log(fn: "trap", at: "exit", status: 0)
-        Kernel.exit!(0)
-      end
-
-      log(fn: "start", at: run, port: Config.port)
-      @server.run.join
     end
 
     def log(data, &blk)
