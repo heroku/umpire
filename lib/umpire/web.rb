@@ -25,7 +25,12 @@ module Umpire
 
       def authorized?
         @auth ||=  Rack::Auth::Basic::Request.new(request.env)
-        @auth.provided? && @auth.basic? && @auth.credentials && (@auth.credentials[1] == Config.api_key)
+        if @auth.provided? && @auth.basic? && @auth.credentials
+          if scope = Config.find_scope_by_key(@auth.credentials[1])
+            log(scope: scope)
+            true
+          end
+        end
       end
     end
 
