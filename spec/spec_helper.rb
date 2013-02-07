@@ -10,6 +10,11 @@ RSpec.configure do |config|
 end
 
 ENV["FORCE_HTTPS"] = "false"
-ENV["API_KEY"] = "test"
 ENV["DEPLOY"] = "test"
 ENV["GRAPHITE_URL"] = "https://graphite.example.com"
+
+ENV["API_KEY"] = "test"
+ENV["API_KEY_DEPRECATED"] = "deprecated"
+
+ENV["API_KEY_PINGDOM"] = "test-2"
+ENV["API_KEY_PINGDOM_DEPRECATED"] = "deprecated-2"
