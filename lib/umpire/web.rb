@@ -42,12 +42,14 @@ module Umpire
         range = (params["range"] && params["range"].to_i)
         librato = params["backend"] && params["backend"] == "librato"
         summarize_sources = !!params["summarize_sources"]
+        compose = params["compose"]
 
-        if librato
-          LibratoMetrics.get_values_for_range(metric, range, summarize_sources)
-        else
-          Graphite.get_values_for_range(Config.graphite_url, metric, range)
-        end
+        raise MetricNotComposite, "multiple metrics without a compose function" if
+          !compose && metric.split(",").size > 1
+
+        return Graphite.get_values_for_range(Config.graphite_url, metric, range) unless librato
+        return LibratoMetrics.compose_values_for_range(compose, metric.split(","), range, summarize_sources) if compose
+        LibratoMetrics.get_values_for_range(metric, range, summarize_sources)
       end
     end
 
