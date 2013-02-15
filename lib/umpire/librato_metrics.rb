@@ -2,11 +2,13 @@ module Umpire
   module LibratoMetrics
     extend self
 
-    def get_values_for_range(metric, range)
+    def get_values_for_range(metric, range, sum_sources=false)
+      # value == avg
+      value_key = sum_sources ? "summarized" : "value"
       begin
         start_time = Time.now.to_i - range
         results = client.fetch(metric, :start_time => start_time, :summarize_sources => true)
-        results.has_key?('all') ? results["all"].map { |h| h["value"] } : []
+        results.has_key?('all') ? results["all"].map { |h| h[value_key] } : []
       rescue Librato::Metrics::NotFound
         raise MetricNotFound
       rescue Librato::Metrics::NetworkError

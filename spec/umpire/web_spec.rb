@@ -25,7 +25,7 @@ module Umpire
         before(:each) do
           authorize "test", "test"
         end
-        
+
         it "should return a 400 if params are not passed" do
           get "/check"
           last_response.status.should eq(400)
@@ -61,7 +61,7 @@ module Umpire
           get "/check?metric=foo.bar&range=60&min=100"
           last_response.status.should eq(500)
         end
-        
+
         it "should return a 200 if the data is within range" do
           Graphite.stub(:get_values_for_range) { [1] }
           get "/check?metric=foo.bar&range=60&min=1"
@@ -69,8 +69,14 @@ module Umpire
         end
 
         it "should call LibratoMetrics if passed the backend param set to librato" do
-          Umpire::LibratoMetrics.should_receive(:get_values_for_range).with('foo.bar', 60) { [] }
+          Umpire::LibratoMetrics.should_receive(:get_values_for_range).with('foo.bar', 60, false) { [] }
           get "/check?metric=foo.bar&range=60&max=100&backend=librato"
+        end
+
+        it "should call LibratoMetrics with summarized sources enabled if passed the summarize_sources param" do
+          Umpire::LibratoMetrics.should_receive(:get_values_for_range).with('foo.bar', 60, true) { [20] }
+          get "/check?metric=foo.bar&range=60&min=10&backend=librato&summarize_sources=true"
+          last_response.should be_ok
         end
       end
     end
