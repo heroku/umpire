@@ -23,5 +23,15 @@ describe Umpire::LibratoMetrics do
       client_double.should_receive(:fetch).with('foo', :start_time => Time.now.to_i - 60, :summarize_sources => true) { {} }
       Umpire::LibratoMetrics.get_values_for_range('foo', 60).should eq([])
     end
+
+    it "uses summarized data when asked" do
+      data = { "all" => [
+        {"value" => 1, "summarized" => 10},
+        {"value" => 2, "summarized" => 20},
+        {"value" => 365, "summarized" => 3650}
+      ] }
+      client_double.should_receive(:fetch) { data }
+      Umpire::LibratoMetrics.get_values_for_range('foo', 60, true).should eq([10, 20, 3650])
+    end
   end
 end

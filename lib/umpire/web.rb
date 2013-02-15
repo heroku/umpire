@@ -41,6 +41,7 @@ module Umpire
       max = (params["max"] && params["max"].to_f)
       range = (params["range"] && params["range"].to_i)
       empty_ok = params["empty_ok"]
+      summarize_sources = !!params["summarize_sources"]
       librato = params["backend"] && params["backend"] == "librato"
 
       if !(metric && (min || max) && range)
@@ -49,9 +50,9 @@ module Umpire
       else
         begin 
           points = if librato
-            LibratoMetrics.get_values_for_range(metric, range)
+            LibratoMetrics.get_values_for_range(metric, range, summarize_sources)
           else
-            Graphite.get_values_for_range(Config.graphite_url, metric, range) 
+            Graphite.get_values_for_range(Config.graphite_url, metric, range)
           end
           if points.empty?
             status empty_ok ? 200 : 404
