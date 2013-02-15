@@ -32,47 +32,60 @@ module Umpire
           end
         end
       end
+
+      def valid?(params)
+        params["metric"] && (params["min"] || params["max"]) && params["range"]
+      end
+
+      def fetch_points(params)
+        metric = params["metric"]
+        range = (params["range"] && params["range"].to_i)
+        librato = params["backend"] && params["backend"] == "librato"
+        summarize_sources = !!params["summarize_sources"]
+
+        if librato
+          LibratoMetrics.get_values_for_range(metric, range, summarize_sources)
+        else
+          Graphite.get_values_for_range(Config.graphite_url, metric, range)
+        end
+      end
     end
 
     get "/check" do
       protected!
-      metric = params["metric"]
+
+      unless valid?(params)
+        status 400
+        next JSON.dump({"error" => "missing parameters"}) + "\n"
+      end
+
       min = (params["min"] && params["min"].to_f)
       max = (params["max"] && params["max"].to_f)
-      range = (params["range"] && params["range"].to_i)
       empty_ok = params["empty_ok"]
-      summarize_sources = !!params["summarize_sources"]
-      librato = params["backend"] && params["backend"] == "librato"
 
-      if !(metric && (min || max) && range)
-        status 400
-        JSON.dump({"error" => "missing parameters"}) + "\n"
-      else
-        begin 
-          points = if librato
-            LibratoMetrics.get_values_for_range(metric, range, summarize_sources)
+      begin
+        points = fetch_points(params)
+        if points.empty?
+          status empty_ok ? 200 : 404
+          JSON.dump({"error" => "no values for metric in range"}) + "\n"
+        else
+          value = (points.reduce { |a,b| a+b }) / points.size.to_f
+          if ((min && (value < min)) || (max && (value > max)))
+            status 500
           else
-            Graphite.get_values_for_range(Config.graphite_url, metric, range)
+            status 200
           end
-          if points.empty?
-            status empty_ok ? 200 : 404
-            JSON.dump({"error" => "no values for metric in range"}) + "\n"
-          else
-            value = (points.reduce { |a,b| a+b }) / points.size.to_f
-            if ((min && (value < min)) || (max && (value > max)))
-              status 500
-            else
-              status 200
-            end
-            JSON.dump({"value" => value}) + "\n"
-          end
-        rescue MetricNotFound
-          status 404
-          JSON.dump({"error" => "metric not found"}) + "\n"
-        rescue MetricServiceRequestFailed
-          status 503
-          JSON.dump({"error" => "connecting to backend metrics service failed with error 'request timed out'"}) + "\n"
+          JSON.dump({"value" => value}) + "\n"
         end
+      rescue MetricNotComposite => e
+        status 400
+        JSON.dump("error" => e.message) + "\n"
+      rescue MetricNotFound
+        status 404
+        JSON.dump({"error" => "metric not found"}) + "\n"
+      rescue MetricServiceRequestFailed
+        status 503
+        JSON.dump({"error" => "connecting to backend metrics service failed with error 'request timed out'"}) + "\n"
       end
     end
 
