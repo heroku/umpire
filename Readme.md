@@ -33,6 +33,14 @@ The default metrics target is Graphite.  If you'd like to check [Librato Metrics
 $ curl -i "$UMPIRE_URL/check?metric=custom.api.production.requests.per-sec&min=40&range=60&backend=librato"
 ```
 
+The default metric values aggregation method is averaging, but you can change it by adding an 'aggregate' query param. Possible aggregation methods are `avg`, `sum`, `max` and `min`. 
+
+Following query responds with 200 if the `custom.api.production.requests.per-sec` metric has had a maximum value of less than 400 over the last minute:
+
+```bash
+$ curl -i "$UMPIRE_URL/check?metric=custom.api.production.requests.per-sec&max=400&range=60&aggregate=max"
+```
+
 ## Local Deploy
 
 ```bash

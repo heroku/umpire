@@ -56,6 +56,30 @@ module Umpire
           last_response.body.should eq({'value' => 1.0}.to_json + "\n")
         end
 
+        it "should return an average value of the metric if passed 'aggregate' param set to 'avg'" do
+          Graphite.stub(:get_values_for_range) { [1,2,3,4,5] }
+          get "/check?metric=foo.bar&range=60&max=100&aggregate=avg"
+          last_response.body.should eq({'value' => 3.0}.to_json + "\n")
+        end
+
+        it "should return a sum of the values of the metric if passed 'aggregate' param set to 'sum'" do
+          Graphite.stub(:get_values_for_range) { [1,2,3,4,5] }
+          get "/check?metric=foo.bar&range=60&max=100&aggregate=sum"
+          last_response.body.should eq({'value' => 15.0}.to_json + "\n")
+        end
+
+        it "should return a min value of the metric if passed 'aggregate' param set to 'min'" do
+          Graphite.stub(:get_values_for_range) { [1,2,3,4,5] }
+          get "/check?metric=foo.bar&range=60&max=100&aggregate=min"
+          last_response.body.should eq({'value' => 1.0}.to_json + "\n")
+        end
+
+        it "should return a max value of the metric if passed 'aggregate' param set to 'max'" do
+          Graphite.stub(:get_values_for_range) { [1,2,3,4,5] }
+          get "/check?metric=foo.bar&range=60&max=100&aggregate=max"
+          last_response.body.should eq({'value' => 5.0}.to_json + "\n")
+        end
+
         it "should return a 500 if the data is out of range" do
           Graphite.stub(:get_values_for_range) { [1] }
           get "/check?metric=foo.bar&range=60&min=100"
