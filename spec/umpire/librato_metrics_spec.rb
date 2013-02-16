@@ -66,6 +66,15 @@ describe Umpire::LibratoMetrics do
         should eq([3, 30, 70])
     end
 
+    it "supports summarized sources" do
+      data1 = { "all" => [ {"value" => 1, "summarized" => 3}, {"value" => 10, "summarized" => 20} ] }
+      data2 = { "all" => [ {"value" => 2, "summarized" => 5}, {"value" => 20, "summarized" => 30} ] }
+      client_double.should_receive(:fetch).with('foo', :start_time => Time.now.to_i - 60, :summarize_sources => true) { data1 }
+      client_double.should_receive(:fetch).with('bar', :start_time => Time.now.to_i - 60, :summarize_sources => true) { data2 }
+      Umpire::LibratoMetrics.compose_values_for_range("sum", ["foo", "bar"], 60, true).
+        should eq([8, 50])
+    end
+
     it "supports the divide function" do
       data1 = { "all" => [ {"value" => 1}, {"value" => 10}, {"value" => 30} ] }
       data2 = { "all" => [ {"value" => 2}, {"value" => 15}, {"value" => 40} ] }
