@@ -25,7 +25,7 @@ module Umpire
         before(:each) do
           authorize "test", "test"
         end
-        
+
         it "should return a 400 if params are not passed" do
           get "/check"
           last_response.status.should eq(400)
@@ -61,17 +61,72 @@ module Umpire
           get "/check?metric=foo.bar&range=60&min=100"
           last_response.status.should eq(500)
         end
-        
+
         it "should return a 200 if the data is within range" do
           Graphite.stub(:get_values_for_range) { [1] }
           get "/check?metric=foo.bar&range=60&min=1"
           last_response.should be_ok
         end
 
-        it "should call LibratoMetrics if passed the backend param set to librato" do
-          Umpire::LibratoMetrics.should_receive(:get_values_for_range).with('foo.bar', 60) { [] }
-          get "/check?metric=foo.bar&range=60&max=100&backend=librato"
+        describe "with librato" do
+          it "should call LibratoMetrics if passed the backend param set to librato" do
+            Graphite.should_not_receive(:get_values_for_range)
+            Umpire::LibratoMetrics.should_receive(:get_values_for_range).with('foo.bar', 60, false) { [] }
+            get "/check?metric=foo.bar&range=60&max=100&backend=librato"
+          end
+
+          it "should call LibratoMetrics with summarized sources enabled if passed the summarize_sources param" do
+            Graphite.should_not_receive(:get_values_for_range)
+            Umpire::LibratoMetrics.should_receive(:get_values_for_range).with('foo.bar', 60, true) { [20] }
+            get "/check?metric=foo.bar&range=60&min=10&backend=librato&summarize_sources=true"
+            last_response.should be_ok
+          end
+
+          describe "with composite metrics" do
+            it "should return 400 if multiple metrics are passed, but without a compose function" do
+              Umpire::LibratoMetrics.should_not_receive(:get_values_for_range)
+              get "/check?metric=foo.bar,bar.foo&range=60&min=10&backend=librato"
+              last_response.status.should eq(400)
+            end
+
+            it "should return 400 if a compose function is passed, but metric is not composite" do
+              Umpire::LibratoMetrics.should_receive(:compose_values_for_range).
+                with("divide", ["foo.bar"], 60, false) { raise MetricNotComposite }
+              get "/check?metric=foo.bar&range=60&min=10&backend=librato&compose=divide"
+              last_response.status.should eq(400)
+            end
+
+            it "should accept sum as a compose function" do
+              Umpire::LibratoMetrics.should_receive(:compose_values_for_range).
+                with("sum", ["foo.bar", "bar.foo"], 60, false) { [10] }
+              get "/check?metric=foo.bar,bar.foo&range=60&min=10&backend=librato&compose=sum"
+              last_response.should be_ok
+            end
+
+            it "should accept divide as a compose function" do
+              Umpire::LibratoMetrics.should_receive(:compose_values_for_range).
+                with("divide", ["foo.bar", "bar.foo"], 60, false) { [10] }
+              get "/check?metric=foo.bar,bar.foo&range=60&min=10&backend=librato&compose=divide"
+              last_response.should be_ok
+            end
+
+            it "should accept multiply as a compose function" do
+              Umpire::LibratoMetrics.should_receive(:compose_values_for_range).
+                with("multiply", ["foo.bar", "bar.foo"], 60, false) { [10] }
+              get "/check?metric=foo.bar,bar.foo&range=60&min=10&backend=librato&compose=multiply"
+              last_response.should be_ok
+            end
+
+            it "should support summarized sources for all metrics" do
+              Umpire::LibratoMetrics.should_receive(:compose_values_for_range).
+                with("sum", ["foo.bar", "bar.foo"], 60, true) { [10] }
+              get "/check?metric=foo.bar,bar.foo&range=60&min=10&backend=librato&compose=sum&summarize_sources=true"
+              last_response.should be_ok
+            end
+          end
+
         end
+
       end
     end
   end
