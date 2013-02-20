@@ -44,11 +44,12 @@ module Umpire
         from = (params["from"] || LibratoMetrics::DEFAULT_FROM).to_sym
         compose = params["compose"]
 
+        return Graphite.get_values_for_range(Config.graphite_url, metric, range) unless librato
+
         if !compose && metric.split(",").size > 1
           raise MetricNotComposite, "multiple metrics without a compose function"
         end
 
-        return Graphite.get_values_for_range(Config.graphite_url, metric, range) unless librato
         return LibratoMetrics.compose_values_for_range(compose, metric.split(","), range, from) if compose
         LibratoMetrics.get_values_for_range(metric, range, from)
       end
