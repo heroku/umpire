@@ -4,7 +4,7 @@ module Umpire
 
     def get_values_for_range(metric, range, sum_sources=false)
       # value == avg
-      value_key = sum_sources ? "summarized" : "value"
+      value_key = sum_sources ? "sum_means" : "value"
       begin
         start_time = Time.now.to_i - range
         results = client.fetch(metric, :start_time => start_time, :summarize_sources => true)

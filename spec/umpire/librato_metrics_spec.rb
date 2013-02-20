@@ -26,11 +26,11 @@ describe Umpire::LibratoMetrics do
       Umpire::LibratoMetrics.get_values_for_range('foo', 60).should eq([])
     end
 
-    it "uses summarized data when asked" do
+    it "uses sum_means data when asked" do
       data = { "all" => [
-        {"value" => 1, "summarized" => 10},
-        {"value" => 2, "summarized" => 20},
-        {"value" => 365, "summarized" => 3650}
+        {"value" => 1, "sum_means" => 10},
+        {"value" => 2, "sum_means" => 20},
+        {"value" => 365, "sum_means" => 3650}
       ] }
       client_double.should_receive(:fetch) { data }
       Umpire::LibratoMetrics.get_values_for_range('foo', 60, true).should eq([10, 20, 3650])
@@ -66,9 +66,9 @@ describe Umpire::LibratoMetrics do
         should eq([3, 30, 70])
     end
 
-    it "supports summarized sources" do
-      data1 = { "all" => [ {"value" => 1, "summarized" => 3}, {"value" => 10, "summarized" => 20} ] }
-      data2 = { "all" => [ {"value" => 2, "summarized" => 5}, {"value" => 20, "summarized" => 30} ] }
+    it "supports sum_means sources" do
+      data1 = { "all" => [ {"value" => 1, "sum_means" => 3}, {"value" => 10, "sum_means" => 20} ] }
+      data2 = { "all" => [ {"value" => 2, "sum_means" => 5}, {"value" => 20, "sum_means" => 30} ] }
       client_double.should_receive(:fetch).with('foo', :start_time => Time.now.to_i - 60, :summarize_sources => true) { data1 }
       client_double.should_receive(:fetch).with('bar', :start_time => Time.now.to_i - 60, :summarize_sources => true) { data2 }
       Umpire::LibratoMetrics.compose_values_for_range("sum", ["foo", "bar"], 60, true).
