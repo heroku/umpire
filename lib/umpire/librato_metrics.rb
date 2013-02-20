@@ -2,13 +2,22 @@ module Umpire
   module LibratoMetrics
     extend self
 
-    def get_values_for_range(metric, range, sum_sources=false)
-      # value == avg
-      value_key = sum_sources ? "sum_means" : "value"
+    # Since we use summarize_sources => true ...
+    # :value       == mean of means
+    # :count       == mean of count
+    # :min         == mean of min
+    # :max         == mean of max
+    # :sum         == mean of sum
+    # :sum_squares == mean of sum_squares
+    # :sum_means   == sum of means (aka values)
+    # :summarized  == count of sources summarized
+    DEFAULT_VALUE_FROM = :value
+
+    def get_values_for_range(metric, range, value_from)
       begin
         start_time = Time.now.to_i - range
         results = client.fetch(metric, :start_time => start_time, :summarize_sources => true)
-        results.has_key?('all') ? results["all"].map { |h| h[value_key] } : []
+        results.has_key?('all') ? results["all"].map { |h| h[value_from.to_s] } : []
       rescue Librato::Metrics::NotFound
         raise MetricNotFound
       rescue Librato::Metrics::NetworkError
@@ -16,12 +25,12 @@ module Umpire
       end
     end
 
-    def compose_values_for_range(function, metrics, range, sum_sources)
+    def compose_values_for_range(function, metrics, range, value_from)
       raise MetricNotComposite, "too few metrics" if metrics.nil? || metrics.size < 2
       raise MetricNotComposite, "too many metrics" if metrics.size > 2
 
       composite = CompositeMetric.for(function)
-      values = metrics.map { |m| get_values_for_range(m, range, sum_sources) }
+      values = metrics.map { |m| get_values_for_range(m, range, value_from) }
       composite.new(*values).value
     end
 
