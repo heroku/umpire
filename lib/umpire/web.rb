@@ -41,7 +41,7 @@ module Umpire
         metric = params["metric"]
         range = (params["range"] && params["range"].to_i)
         librato = params["backend"] == "librato"
-        value_from = (params["value_from"] || LibratoMetrics::DEFAULT_VALUE_FROM).to_sym
+        from = (params["from"] || LibratoMetrics::DEFAULT_FROM).to_sym
         compose = params["compose"]
 
         if !compose && metric.split(",").size > 1
@@ -49,8 +49,8 @@ module Umpire
         end
 
         return Graphite.get_values_for_range(Config.graphite_url, metric, range) unless librato
-        return LibratoMetrics.compose_values_for_range(compose, metric.split(","), range, value_from) if compose
-        LibratoMetrics.get_values_for_range(metric, range, value_from)
+        return LibratoMetrics.compose_values_for_range(compose, metric.split(","), range, from) if compose
+        LibratoMetrics.get_values_for_range(metric, range, from)
       end
     end
 

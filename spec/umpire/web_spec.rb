@@ -75,10 +75,10 @@ module Umpire
             get "/check?metric=foo.bar&range=60&max=100&backend=librato"
           end
 
-          it "should call LibratoMetrics with a sum_means value_from if passed via a param" do
+          it "should call LibratoMetrics with a from=sum_means from if passed via a param" do
             Graphite.should_not_receive(:get_values_for_range)
             Umpire::LibratoMetrics.should_receive(:get_values_for_range).with('foo.bar', 60, :sum_means) { [20] }
-            get "/check?metric=foo.bar&range=60&min=10&backend=librato&value_from=sum_means"
+            get "/check?metric=foo.bar&range=60&min=10&backend=librato&from=sum_means"
             last_response.should be_ok
           end
 
@@ -120,7 +120,7 @@ module Umpire
             it "should support summarized sources for all metrics" do
               Umpire::LibratoMetrics.should_receive(:compose_values_for_range).
                 with("sum", ["foo.bar", "bar.foo"], 60, :sum_means) { [10] }
-              get "/check?metric=foo.bar,bar.foo&range=60&min=10&backend=librato&compose=sum&value_from=sum_means"
+              get "/check?metric=foo.bar,bar.foo&range=60&min=10&backend=librato&compose=sum&from=sum_means"
               last_response.should be_ok
             end
           end
