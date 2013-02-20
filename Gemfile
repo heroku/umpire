@@ -1,13 +1,13 @@
 source "https://rubygems.org"
 
-gem "json", "1.5.3"
-gem "librato-metrics", "0.7.0"
-gem "sinatra", "1.2.6"
+gem "yajl-ruby"
+gem "librato-metrics"
+gem "sinatra"
 gem "mongrel", "1.2.0.pre2"
-gem "instruments", "0.0.9"
-gem "rack-ssl-enforcer", "0.2.4"
-gem "rest-client", "1.6.7"
-gem "scrolls", "0.2.3"
+gem "instruments"
+gem "rack-ssl-enforcer"
+gem "rest-client"
+gem "scrolls"
 
 group :development do
   gem "rack-test"
