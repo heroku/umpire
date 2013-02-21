@@ -1,10 +1,11 @@
 require 'spec_helper'
 
 describe Umpire::Graphite do
+  let(:graphite_url) { "https://graphite.example.com" }
+  let(:metric) { "foo.bar" }
+  let(:range) { 60 }
+
   describe "get_values_for_range" do
-    let(:graphite_url) { "https://graphite.example.com" }
-    let(:metric) { "foo.bar" }
-    let(:range) { 60 }
     let(:stub_request_with_values) { stub_request(:get, "#{graphite_url}/render/?format=json&from=-#{range}s&target=#{metric}").to_return(:body => [{"target"=>metric, "datapoints"=>[[4.47, 1348851060]]}].to_json) }
     let(:stub_request_without_values) { stub_request(:get, "#{graphite_url}/render/?format=json&from=-#{range}s&target=#{metric}").to_return(:body => [].to_json) }
 
@@ -32,6 +33,22 @@ describe Umpire::Graphite do
     it "should raise an exception if the graphite HTTP request fails for any reason" do
       stub_request(:get, "#{graphite_url}/render/?format=json&from=-#{range}s&target=#{metric}").to_timeout
       lambda { Umpire::Graphite.get_values_for_range(graphite_url, metric, range) }.should raise_error(MetricServiceRequestFailed)
+    end
+  end
+
+  describe "url" do
+    context "with encodable characters" do
+      it "should return a properly url encoded url" do
+        metric = "system.cpu.0.{idle,wait})"
+        Umpire::Graphite.url(graphite_url, metric, range).should == "https://graphite.example.com/render/?target=system.cpu.0.%7Bidle,wait%7D)&format=json&from=-60s"
+      end
+    end
+
+    context "with encoded characters" do
+      it "should return a properly url encoded url" do
+        metric = "system.cpu.0.%7Bidle,wait%7D)"
+        Umpire::Graphite.url(graphite_url, metric, range).should == "https://graphite.example.com/render/?target=system.cpu.0.%7Bidle,wait%7D)&format=json&from=-60s"
+      end
     end
   end
 end

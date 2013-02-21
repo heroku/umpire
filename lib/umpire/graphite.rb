@@ -1,15 +1,21 @@
+require 'uri'
+
 module Umpire
   module Graphite
     extend self
 
     def get_values_for_range(graphite_url, metric, range)
       begin
-        json = RestClient.get("#{graphite_url}/render/?target=#{metric}&format=json&from=-#{range}s")
+        json = RestClient.get(url(graphite_url, metric, range))
         data = JSON.parse(json)
         data.empty? ? raise(MetricNotFound) : data.first["datapoints"].map { |v, _| v }.compact
       rescue RestClient::RequestFailed
         raise MetricServiceRequestFailed
       end
+    end
+
+    def url(graphite_url, metric, range)
+      URI.encode(URI.decode("#{graphite_url}/render/?target=#{metric}&format=json&from=-#{range}s"))
     end
   end
 end
