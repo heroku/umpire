@@ -16,7 +16,14 @@ module Umpire
     def get_values_for_range(metric, range, from, source=nil)
       begin
         start_time = Time.now.to_i - range
-        results = client.fetch(metric, :start_time => start_time, :summarize_sources => true)
+
+        options =  {
+          :start_time => start_time,
+          :summarize_sources => true
+        }
+        options.merge!(:source => source) if source
+
+        results = client.fetch(metric, options)
         results.has_key?('all') ? results["all"].map { |h| h[from.to_s] } : []
       rescue Librato::Metrics::NotFound
         raise MetricNotFound
