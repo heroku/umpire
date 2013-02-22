@@ -71,14 +71,21 @@ module Umpire
         describe "with librato" do
           it "should call LibratoMetrics if passed the backend param set to librato" do
             Graphite.should_not_receive(:get_values_for_range)
-            Umpire::LibratoMetrics.should_receive(:get_values_for_range).with('foo.bar', 60, :value) { [] }
+            Umpire::LibratoMetrics.should_receive(:get_values_for_range).with('foo.bar', 60, :value, nil) { [] }
             get "/check?metric=foo.bar&range=60&max=100&backend=librato"
           end
 
           it "should call LibratoMetrics with a from=sum_means from if passed via a param" do
             Graphite.should_not_receive(:get_values_for_range)
-            Umpire::LibratoMetrics.should_receive(:get_values_for_range).with('foo.bar', 60, :sum_means) { [20] }
+            Umpire::LibratoMetrics.should_receive(:get_values_for_range).with('foo.bar', 60, :sum_means, nil) { [20] }
             get "/check?metric=foo.bar&range=60&min=10&backend=librato&from=sum_means"
+            last_response.should be_ok
+          end
+
+          it "should call LibratoMetrics with a source=blah from if passed via a param" do
+            Graphite.should_not_receive(:get_values_for_range)
+            Umpire::LibratoMetrics.should_receive(:get_values_for_range).with('foo.bar', 60, :value, 'blah') { [20] }
+            get "/check?metric=foo.bar&range=60&min=10&backend=librato&source=blah"
             last_response.should be_ok
           end
 

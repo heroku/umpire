@@ -13,7 +13,7 @@ module Umpire
     # :summarized  == count of sources summarized
     DEFAULT_FROM = :value
 
-    def get_values_for_range(metric, range, from)
+    def get_values_for_range(metric, range, from, source=nil)
       begin
         start_time = Time.now.to_i - range
         results = client.fetch(metric, :start_time => start_time, :summarize_sources => true)

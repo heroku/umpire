@@ -39,6 +39,7 @@ module Umpire
 
       def fetch_points(params)
         metric = params["metric"]
+        source = params["source"]
         range = (params["range"] && params["range"].to_i)
         librato = params["backend"] == "librato"
         from = (params["from"] || LibratoMetrics::DEFAULT_FROM).to_sym
@@ -51,7 +52,7 @@ module Umpire
         end
 
         return LibratoMetrics.compose_values_for_range(compose, metric.split(","), range, from) if compose
-        LibratoMetrics.get_values_for_range(metric, range, from)
+        LibratoMetrics.get_values_for_range(metric, range, from, source)
       end
     end
 
