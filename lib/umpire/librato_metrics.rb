@@ -32,12 +32,12 @@ module Umpire
       end
     end
 
-    def compose_values_for_range(function, metrics, range, from)
+    def compose_values_for_range(function, metrics, range, from, source=nil)
       raise MetricNotComposite, "too few metrics" if metrics.nil? || metrics.size < 2
       raise MetricNotComposite, "too many metrics" if metrics.size > 2
 
       composite = CompositeMetric.for(function)
-      values = metrics.map { |m| get_values_for_range(m, range, from) }
+      values = metrics.map { |m| get_values_for_range(m, range, from, source) }
       composite.new(*values).value
     end
 

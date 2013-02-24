@@ -98,35 +98,35 @@ module Umpire
 
             it "should return 400 if a compose function is passed, but metric is not composite" do
               Umpire::LibratoMetrics.should_receive(:compose_values_for_range).
-                with("divide", ["foo.bar"], 60, :value) { raise MetricNotComposite }
+                with("divide", ["foo.bar"], 60, :value, nil) { raise MetricNotComposite }
               get "/check?metric=foo.bar&range=60&min=10&backend=librato&compose=divide"
               last_response.status.should eq(400)
             end
 
             it "should accept sum as a compose function" do
               Umpire::LibratoMetrics.should_receive(:compose_values_for_range).
-                with("sum", ["foo.bar", "bar.foo"], 60, :value) { [10] }
+                with("sum", ["foo.bar", "bar.foo"], 60, :value, nil) { [10] }
               get "/check?metric=foo.bar,bar.foo&range=60&min=10&backend=librato&compose=sum"
               last_response.should be_ok
             end
 
             it "should accept divide as a compose function" do
               Umpire::LibratoMetrics.should_receive(:compose_values_for_range).
-                with("divide", ["foo.bar", "bar.foo"], 60, :value) { [10] }
+                with("divide", ["foo.bar", "bar.foo"], 60, :value, nil) { [10] }
               get "/check?metric=foo.bar,bar.foo&range=60&min=10&backend=librato&compose=divide"
               last_response.should be_ok
             end
 
             it "should accept multiply as a compose function" do
               Umpire::LibratoMetrics.should_receive(:compose_values_for_range).
-                with("multiply", ["foo.bar", "bar.foo"], 60, :value) { [10] }
+                with("multiply", ["foo.bar", "bar.foo"], 60, :value, nil) { [10] }
               get "/check?metric=foo.bar,bar.foo&range=60&min=10&backend=librato&compose=multiply"
               last_response.should be_ok
             end
 
             it "should support summarized sources for all metrics" do
               Umpire::LibratoMetrics.should_receive(:compose_values_for_range).
-                with("sum", ["foo.bar", "bar.foo"], 60, :sum_means) { [10] }
+                with("sum", ["foo.bar", "bar.foo"], 60, :sum_means, nil) { [10] }
               get "/check?metric=foo.bar,bar.foo&range=60&min=10&backend=librato&compose=sum&from=sum_means"
               last_response.should be_ok
             end

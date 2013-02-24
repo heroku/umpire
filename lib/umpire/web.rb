@@ -51,7 +51,7 @@ module Umpire
           raise MetricNotComposite, "multiple metrics without a compose function"
         end
 
-        return LibratoMetrics.compose_values_for_range(compose, metric.split(","), range, from) if compose
+        return LibratoMetrics.compose_values_for_range(compose, metric.split(","), range, from, source) if compose
         LibratoMetrics.get_values_for_range(metric, range, from, source)
       end
     end
