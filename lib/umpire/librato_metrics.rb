@@ -13,10 +13,17 @@ module Umpire
     # :summarized  == count of sources summarized
     DEFAULT_FROM = :value
 
-    def get_values_for_range(metric, range, from)
+    def get_values_for_range(metric, range, from, source=nil)
       begin
         start_time = Time.now.to_i - range
-        results = client.fetch(metric, :start_time => start_time, :summarize_sources => true)
+
+        options =  {
+          :start_time => start_time,
+          :summarize_sources => true
+        }
+        options.merge!(:source => source) if source
+
+        results = client.fetch(metric, options)
         results.has_key?('all') ? results["all"].map { |h| h[from.to_s] } : []
       rescue Librato::Metrics::NotFound
         raise MetricNotFound
@@ -25,12 +32,12 @@ module Umpire
       end
     end
 
-    def compose_values_for_range(function, metrics, range, from)
+    def compose_values_for_range(function, metrics, range, from, source=nil)
       raise MetricNotComposite, "too few metrics" if metrics.nil? || metrics.size < 2
       raise MetricNotComposite, "too many metrics" if metrics.size > 2
 
       composite = CompositeMetric.for(function)
-      values = metrics.map { |m| get_values_for_range(m, range, from) }
+      values = metrics.map { |m| get_values_for_range(m, range, from, source) }
       composite.new(*values).value
     end
 

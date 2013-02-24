@@ -35,6 +35,11 @@ describe Umpire::LibratoMetrics do
       client_double.should_receive(:fetch) { data }
       Umpire::LibratoMetrics.get_values_for_range('foo', 60, :sum_means).should eq([10, 20, 3650])
     end
+
+    it "uses the source when passed" do
+      client_double.should_receive(:fetch).with('foo', :start_time => Time.now.to_i - 60, :summarize_sources => true, :source => 'bar') { {} }
+      Umpire::LibratoMetrics.get_values_for_range('foo', 60, :value, 'bar').should eq([])
+    end
   end
 
   describe "composite values" do
