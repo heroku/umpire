@@ -71,7 +71,7 @@ module CompositeMetric
     def initialize(*values)
       first = values.shift
       @value = first.zip(*values).map do |items|
-        items.inject(0) { |sum, i| sum += i }
+        items.inject(0) { |sum, i| sum += i.to_f }
       end
     end
   end

@@ -71,6 +71,15 @@ describe Umpire::LibratoMetrics do
         should eq([3, 30, 70])
     end
 
+    it "supports the sum function with empty values" do
+      data1 = { "all" => [ {"value" => 1}, {"value" => 10}, {"value" => 30} ] }
+      data2 = { "all" => [ ] }
+      client_double.should_receive(:fetch).with('foo', :start_time => Time.now.to_i - 60, :summarize_sources => true) { data1 }
+      client_double.should_receive(:fetch).with('bar', :start_time => Time.now.to_i - 60, :summarize_sources => true) { data2 }
+      Umpire::LibratoMetrics.compose_values_for_range("sum", ["foo", "bar"], 60, :value).
+        should eq([1, 10, 30])
+    end
+
     it "supports sum_means sources" do
       data1 = { "all" => [ {"value" => 1, "sum_means" => 3}, {"value" => 10, "sum_means" => 20} ] }
       data2 = { "all" => [ {"value" => 2, "sum_means" => 5}, {"value" => 20, "sum_means" => 30} ] }
