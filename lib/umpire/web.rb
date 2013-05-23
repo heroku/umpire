@@ -15,6 +15,10 @@ module Umpire
       content_type :json
     end
 
+    after do
+      Thread.current[:scope] = nil
+    end
+
     helpers do
       def protected!
         unless authorized?
@@ -26,8 +30,7 @@ module Umpire
       def authorized?
         @auth ||=  Rack::Auth::Basic::Request.new(request.env)
         if @auth.provided? && @auth.basic? && @auth.credentials
-          if scope = Config.find_scope_by_key(@auth.credentials[1])
-            log(scope: scope)
+          if Thread.current[:scope] = Config.find_scope_by_key(@auth.credentials[1])
             true
           end
         end
@@ -126,13 +129,9 @@ module Umpire
       @server.run.join
     end
 
-    def log(data, &blk)
-      Web.log(data, &blk)
-    end
-
     def self.log(data, &blk)
       data.delete(:level)
-      Log.log(Log.merge({ns: "web"}, data), &blk)
+      Log.log({ns: "web", scope: Thread.current[:scope]}.merge(data), &blk)
     end
   end
 end
