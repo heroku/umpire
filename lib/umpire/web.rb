@@ -1,5 +1,5 @@
+require "thin"
 require "sinatra/base"
-require "rack/handler/mongrel"
 require "rack-ssl-enforcer"
 require "instruments"
 
@@ -132,19 +132,21 @@ module Umpire
 
     def self.start
       log(fn: "start", at: "build")
-      @server = Mongrel::HttpServer.new("0.0.0.0", Config.port)
-      @server.register("/", Rack::Handler::Mongrel.new(Web.new))
+      @server = Thin::Server.new("0.0.0.0", Config.port) do
+        run Web.new
+      end
 
       log(fn: "start", at: "install_trap")
       Signal.trap("TERM") do
         log(fn: "trap")
-        @server.stop(true)
+        @server.stop!
         log(fn: "trap", at: "exit", status: 0)
         Kernel.exit!(0)
       end
 
+      @server.start
+
       log(fn: "start", at: run, port: Config.port)
-      @server.run.join
     end
 
     def self.log(data, &blk)

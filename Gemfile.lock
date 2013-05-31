@@ -4,20 +4,17 @@ GEM
     addressable (2.3.3)
     aggregate (0.2.2)
     crack (0.3.2)
-    daemons (1.0.10)
+    daemons (1.1.9)
     diff-lcs (1.1.3)
+    eventmachine (1.0.3)
     faraday (0.8.5)
       multipart-post (~> 1.1)
-    gem_plugin (0.2.3)
     instruments (0.0.9)
     librato-metrics (1.0.3)
       aggregate (~> 0.2.2)
       faraday (~> 0.7)
       multi_json
     mime-types (1.21)
-    mongrel (1.2.0.pre2)
-      daemons (~> 1.0.10)
-      gem_plugin (~> 0.2.3)
     multi_json (1.6.1)
     multipart-post (1.1.5)
     rack (1.5.2)
@@ -42,6 +39,10 @@ GEM
       rack (~> 1.4)
       rack-protection (~> 1.3)
       tilt (~> 1.3, >= 1.3.3)
+    thin (1.5.0)
+      daemons (>= 1.0.9)
+      eventmachine (>= 0.12.6)
+      rack (>= 1.0.0)
     tilt (1.3.3)
     webmock (1.9.3)
       addressable (>= 2.2.7)
@@ -54,7 +55,6 @@ PLATFORMS
 DEPENDENCIES
   instruments
   librato-metrics
-  mongrel (= 1.2.0.pre2)
   rack-ssl-enforcer
   rack-test
   rake
@@ -62,5 +62,6 @@ DEPENDENCIES
   rspec
   scrolls
   sinatra
+  thin
   webmock
   yajl-ruby
