@@ -54,6 +54,8 @@ module Umpire
         options.merge!(group_by: group_by)
       end
 
+      metric = metric.split(":").first
+
       results = client.fetch(metric, options)
 
       if Config.debug?
