@@ -1,9 +1,11 @@
 source "https://rubygems.org"
 
+ruby "1.9.3"
+
 gem "yajl-ruby"
 gem "librato-metrics"
 gem "sinatra"
-gem "mongrel", "1.2.0.pre2"
+gem "thin"
 gem "instruments"
 gem "rack-ssl-enforcer"
 gem "rest-client"

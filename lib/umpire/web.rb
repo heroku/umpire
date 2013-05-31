@@ -1,5 +1,5 @@
+require "thin"
 require "sinatra/base"
-require "rack/handler/mongrel"
 require "rack-ssl-enforcer"
 require "instruments"
 
@@ -40,22 +40,40 @@ module Umpire
         params["metric"] && (params["min"] || params["max"]) && params["range"]
       end
 
+      def use_librato_backend?
+        params["backend"] == "librato"
+      end
+
       def fetch_points(params)
         metric = params["metric"]
-        source = params["source"]
         range = (params["range"] && params["range"].to_i)
-        librato = params["backend"] == "librato"
-        from = (params["from"] || LibratoMetrics::DEFAULT_FROM).to_sym
-        compose = params["compose"]
 
-        return Graphite.get_values_for_range(Config.graphite_url, metric, range) unless librato
+        if use_librato_backend?
+          compose = params["compose"]
 
-        if !compose && metric.split(",").size > 1
-          raise MetricNotComposite, "multiple metrics without a compose function"
+          opts = {}
+
+          if source = params["source"]
+            opts.merge!(source: source)
+          end
+
+          if from = params["from"]
+            opts.merge!(from: from)
+          end
+
+          if !compose && metric.split(",").size > 1
+            raise MetricNotComposite, "multiple metrics without a compose function"
+          end
+
+          if compose
+            LibratoMetrics.compose_values_for_range(compose, metric.split(","), range, opts)
+          else
+            LibratoMetrics.get_values_for_range(metric, range, opts)
+          end
+        else
+          Graphite.get_values_for_range(Config.graphite_url, metric, range)
         end
 
-        return LibratoMetrics.compose_values_for_range(compose, metric.split(","), range, from, source) if compose
-        LibratoMetrics.get_values_for_range(metric, range, from, source)
       end
     end
 
@@ -114,19 +132,21 @@ module Umpire
 
     def self.start
       log(fn: "start", at: "build")
-      @server = Mongrel::HttpServer.new("0.0.0.0", Config.port)
-      @server.register("/", Rack::Handler::Mongrel.new(Web.new))
+      @server = Thin::Server.new("0.0.0.0", Config.port) do
+        run Web.new
+      end
 
       log(fn: "start", at: "install_trap")
       Signal.trap("TERM") do
         log(fn: "trap")
-        @server.stop(true)
+        @server.stop!
         log(fn: "trap", at: "exit", status: 0)
         Kernel.exit!(0)
       end
 
+      @server.start
+
       log(fn: "start", at: run, port: Config.port)
-      @server.run.join
     end
 
     def self.log(data, &blk)

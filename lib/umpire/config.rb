@@ -14,6 +14,10 @@ module Umpire
     def self.librato_email; env!("LIBRATO_EMAIL"); end
     def self.librato_key; env!("LIBRATO_KEY"); end
 
+    def self.debug?
+      !!ENV["DEBUG"]
+    end
+
     def self.find_scope_by_key(value)
       env = ENV.find { |k, v| k =~ /\AAPI_KEY/ && v == value }
       return if env.nil?

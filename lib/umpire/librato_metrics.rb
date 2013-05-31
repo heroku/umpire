@@ -13,31 +13,47 @@ module Umpire
     # :summarized  == count of sources summarized
     DEFAULT_FROM = :value
 
-    def get_values_for_range(metric, range, from, source=nil)
-      begin
-        start_time = Time.now.to_i - range
-
-        options =  {
-          :start_time => start_time,
-          :summarize_sources => true
-        }
-        options.merge!(:source => source) if source
-
-        results = client.fetch(metric, options)
-        results.has_key?('all') ? results["all"].map { |h| h[from.to_s] } : []
-      rescue Librato::Metrics::NotFound
-        raise MetricNotFound
-      rescue Librato::Metrics::NetworkError
-        raise MetricServiceRequestFailed
-      end
+    def start_time(range)
+      Time.now.to_i - range
     end
 
-    def compose_values_for_range(function, metrics, range, from, source=nil)
+    def default_options
+      {
+        summarize_sources: true,
+        breakout_sources: false
+      }
+    end
+
+    def get_values_for_range(metric, range, options={})
+      options = default_options.merge(options)
+
+      from = options.delete(:from) { |el| DEFAULT_FROM }.to_s
+
+      options.merge!(start_time: start_time(range))
+
+      results = client.fetch(metric, options)
+
+      if Config.debug?
+        Log.log({debug: "librato results"}.merge(results))
+      end
+
+      if all = results['all']
+        all.map { |h| h[from] }
+      else
+        []
+      end
+    rescue Librato::Metrics::NotFound
+      raise MetricNotFound
+    rescue Librato::Metrics::NetworkError
+      raise MetricServiceRequestFailed
+    end
+
+    def compose_values_for_range(function, metrics, range, options={})
       raise MetricNotComposite, "too few metrics" if metrics.nil? || metrics.size < 2
       raise MetricNotComposite, "too many metrics" if metrics.size > 2
 
       composite = CompositeMetric.for(function)
-      values = metrics.map { |m| get_values_for_range(m, range, from, source) }
+      values = metrics.map { |m| get_values_for_range(m, range, options) }
       composite.new(*values).value
     end
 
