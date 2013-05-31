@@ -37,7 +37,7 @@ $ curl -i "$UMPIRE_URL/check?metric=custom.api.production.requests.per-sec&min=4
 
 Librato returns multiple values from their API for a given metric. These include: count, min, max, sum, value (aka mean) and a few others. In addition librato allows you to optionally provide a statistical function used to generate an aggregated time series across sources by providing a `group_by` param.
 
-We support both of these options by specifying your librato metrics like so: metric_name:<from>:<group_by>
+We support both of these options by specifying your librato metrics like so: `metric_name:<from>:<group_by>`
 
 Example fetching the `active-connections` metric, with group_by=sum and pulling values from the "count" field returned in the "all" block
 ```bash
