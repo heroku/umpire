@@ -24,6 +24,9 @@ module Umpire
         options.merge!(:source => source) if source
 
         results = client.fetch(metric, options)
+        if Config.debug?
+          Log.log({debug: "librato results"}.merge(results))
+        end
         results.has_key?('all') ? results["all"].map { |h| h[from.to_s] } : []
       rescue Librato::Metrics::NotFound
         raise MetricNotFound
