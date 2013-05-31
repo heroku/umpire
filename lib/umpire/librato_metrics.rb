@@ -56,6 +56,10 @@ module Umpire
 
       metric = metric.split(":").first
 
+      if Config.debug?
+        Log.log(options.merge(range: range, metric: metric))
+      end
+
       results = client.fetch(metric, options)
 
       if Config.debug?
