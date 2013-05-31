@@ -20,9 +20,11 @@ GEM
     rack (1.5.2)
     rack-protection (1.3.2)
       rack
-    rack-ssl-enforcer (0.2.5)
+    rack-ssl (1.3.3)
+      rack
     rack-test (0.6.2)
       rack (>= 1.0)
+    rack-timeout (0.1.0beta2)
     rake (10.0.3)
     rest-client (1.6.7)
       mime-types (>= 1.16)
@@ -55,8 +57,9 @@ PLATFORMS
 DEPENDENCIES
   instruments
   librato-metrics
-  rack-ssl-enforcer
+  rack-ssl
   rack-test
+  rack-timeout (= 0.1.0beta2)
   rake
   rest-client
   rspec

@@ -1,13 +1,13 @@
 require "thin"
 require "sinatra/base"
-require "rack-ssl-enforcer"
+require 'rack/ssl'
+require 'rack-timeout'
 require "instruments"
 
 module Umpire
   class Web < Sinatra::Base
     enable :dump_errors
     disable :show_exceptions
-    use Rack::SslEnforcer if Config.force_https?
     register Sinatra::Instrumentation
     instrument_routes
 
@@ -133,6 +133,14 @@ module Umpire
     def self.start
       log(fn: "start", at: "build")
       @server = Thin::Server.new("0.0.0.0", Config.port) do
+
+        if Config.force_https?
+          use Rack::SSL
+        end
+
+        use Rack::Timeout
+        Rack::Timeout.timeout = 29
+
         run Web.new
       end
 
