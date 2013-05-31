@@ -46,21 +46,29 @@ module Umpire
 
       def fetch_points(params)
         metric = params["metric"]
-        source = params["source"]
         range = (params["range"] && params["range"].to_i)
 
         if use_librato_backend?
-          compose = !!params["compose"]
-          from = (params["from"] || LibratoMetrics::DEFAULT_FROM).to_sym
+          compose = params["compose"]
+
+          opts = {}
+
+          if source = params["source"]
+            opts.merge!(source: source)
+          end
+
+          if from = params["from"]
+            opts.merge!(from: from)
+          end
 
           if !compose && metric.split(",").size > 1
             raise MetricNotComposite, "multiple metrics without a compose function"
           end
 
           if compose
-            LibratoMetrics.compose_values_for_range(compose, metric.split(","), range, from, source)
+            LibratoMetrics.compose_values_for_range(compose, metric.split(","), range, opts)
           else
-            LibratoMetrics.get_values_for_range(metric, range, from, source)
+            LibratoMetrics.get_values_for_range(metric, range, opts)
           end
         else
           Graphite.get_values_for_range(Config.graphite_url, metric, range)

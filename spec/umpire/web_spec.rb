@@ -71,20 +71,20 @@ module Umpire
         describe "with librato" do
           it "should call LibratoMetrics if passed the backend param set to librato" do
             Graphite.should_not_receive(:get_values_for_range)
-            Umpire::LibratoMetrics.should_receive(:get_values_for_range).with('foo.bar', 60, :value, nil) { [] }
+            Umpire::LibratoMetrics.should_receive(:get_values_for_range).with('foo.bar', 60, {}) { [] }
             get "/check?metric=foo.bar&range=60&max=100&backend=librato"
           end
 
           it "should call LibratoMetrics with a from=sum_means from if passed via a param" do
             Graphite.should_not_receive(:get_values_for_range)
-            Umpire::LibratoMetrics.should_receive(:get_values_for_range).with('foo.bar', 60, :sum_means, nil) { [20] }
+            Umpire::LibratoMetrics.should_receive(:get_values_for_range).with('foo.bar', 60, {from: "sum_means"}) { [20] }
             get "/check?metric=foo.bar&range=60&min=10&backend=librato&from=sum_means"
             last_response.should be_ok
           end
 
           it "should call LibratoMetrics with a source=blah from if passed via a param" do
             Graphite.should_not_receive(:get_values_for_range)
-            Umpire::LibratoMetrics.should_receive(:get_values_for_range).with('foo.bar', 60, :value, 'blah') { [20] }
+            Umpire::LibratoMetrics.should_receive(:get_values_for_range).with('foo.bar', 60, {source: 'blah'}) { [20] }
             get "/check?metric=foo.bar&range=60&min=10&backend=librato&source=blah"
             last_response.should be_ok
           end
@@ -98,35 +98,35 @@ module Umpire
 
             it "should return 400 if a compose function is passed, but metric is not composite" do
               Umpire::LibratoMetrics.should_receive(:compose_values_for_range).
-                with("divide", ["foo.bar"], 60, :value, nil) { raise MetricNotComposite }
+                with("divide", ["foo.bar"], 60, {}) { raise MetricNotComposite }
               get "/check?metric=foo.bar&range=60&min=10&backend=librato&compose=divide"
               last_response.status.should eq(400)
             end
 
             it "should accept sum as a compose function" do
               Umpire::LibratoMetrics.should_receive(:compose_values_for_range).
-                with("sum", ["foo.bar", "bar.foo"], 60, :value, nil) { [10] }
+                with("sum", ["foo.bar", "bar.foo"], 60, {}) { [10] }
               get "/check?metric=foo.bar,bar.foo&range=60&min=10&backend=librato&compose=sum"
               last_response.should be_ok
             end
 
             it "should accept divide as a compose function" do
               Umpire::LibratoMetrics.should_receive(:compose_values_for_range).
-                with("divide", ["foo.bar", "bar.foo"], 60, :value, nil) { [10] }
+                with("divide", ["foo.bar", "bar.foo"], 60, {}) { [10] }
               get "/check?metric=foo.bar,bar.foo&range=60&min=10&backend=librato&compose=divide"
               last_response.should be_ok
             end
 
             it "should accept multiply as a compose function" do
               Umpire::LibratoMetrics.should_receive(:compose_values_for_range).
-                with("multiply", ["foo.bar", "bar.foo"], 60, :value, nil) { [10] }
+                with("multiply", ["foo.bar", "bar.foo"], 60, {}) { [10] }
               get "/check?metric=foo.bar,bar.foo&range=60&min=10&backend=librato&compose=multiply"
               last_response.should be_ok
             end
 
             it "should support summarized sources for all metrics" do
               Umpire::LibratoMetrics.should_receive(:compose_values_for_range).
-                with("sum", ["foo.bar", "bar.foo"], 60, :sum_means, nil) { [10] }
+                with("sum", ["foo.bar", "bar.foo"], 60, {from: "sum_means"}) { [10] }
               get "/check?metric=foo.bar,bar.foo&range=60&min=10&backend=librato&compose=sum&from=sum_means"
               last_response.should be_ok
             end
