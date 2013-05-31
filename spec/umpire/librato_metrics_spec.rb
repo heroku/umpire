@@ -36,6 +36,18 @@ describe Umpire::LibratoMetrics do
       Umpire::LibratoMetrics.get_values_for_range('foo', 60, {from: :sum_means}).should eq([10, 20, 3650])
     end
 
+    describe "with colons" do
+      it "uses sum_means data when asked" do
+        data = { "all" => [
+          {"value" => 1, "sum_means" => 10},
+          {"value" => 2, "sum_means" => 20},
+          {"value" => 365, "sum_means" => 3650}
+        ] }
+        client_double.should_receive(:fetch) { data }
+        Umpire::LibratoMetrics.get_values_for_range('foo:sum_means', 60).should eq([10, 20, 3650])
+      end
+    end
+
     it "uses the source when passed" do
       client_double.should_receive(:fetch).with('foo', {summarize_sources: true, breakout_sources: false, source: "bar", start_time: Time.now.to_i - 60}) { {} }
       Umpire::LibratoMetrics.get_values_for_range('foo', 60, {source: 'bar'}).should eq([])

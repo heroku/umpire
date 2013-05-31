@@ -24,12 +24,35 @@ module Umpire
       }
     end
 
+    def determine_from(metric, options)
+      if options.has_key?(:from)
+        options.delete(:from)
+      elsif metric.include?(":")
+        metric.split(":")[1]
+      else
+        DEFAULT_FROM
+      end.to_s
+    end
+
+    def determine_group_by(metric)
+      parts = metric.split(":")
+      if parts.length == 3
+        parts[2]
+      else
+        nil
+      end
+    end
+
     def get_values_for_range(metric, range, options={})
       options = default_options.merge(options)
 
-      from = options.delete(:from) { |el| DEFAULT_FROM }.to_s
+      from = determine_from(metric, options)
 
       options.merge!(start_time: start_time(range))
+
+      if group_by = determine_group_by(metric)
+        options.merge!(group_by: group_by)
+      end
 
       results = client.fetch(metric, options)
 
