@@ -40,7 +40,7 @@ module Umpire
         params["metric"] && (params["min"] || params["max"]) && params["range"]
       end
 
-      def librato?
+      def use_librato_backend?
         params["backend"] == "librato"
       end
 
@@ -49,8 +49,8 @@ module Umpire
         source = params["source"]
         range = (params["range"] && params["range"].to_i)
 
-        if librato?
-          compose = params["compose"]
+        if use_librato_backend?
+          compose = !!params["compose"]
           from = (params["from"] || LibratoMetrics::DEFAULT_FROM).to_sym
 
           if !compose && metric.split(",").size > 1
