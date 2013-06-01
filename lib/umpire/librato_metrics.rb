@@ -28,7 +28,8 @@ module Umpire
       if options.has_key?(:from)
         options.delete(:from)
       elsif metric.include?(":")
-        metric.split(":")[1]
+        from = metric.split(":")[1]
+        from == "mean" ? "value" : from
       else
         DEFAULT_FROM
       end.to_s
