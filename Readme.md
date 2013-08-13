@@ -27,6 +27,13 @@ To respond with 200 if the `custom.api.production.requests.per-sec` metric has h
 $ curl -i "$UMPIRE_URL/check?metric=custom.api.production.requests.per-sec&min=40&range=60"
 ```
 
+If you want to check for the sum of all values over the last 60 seconds (instead
+of the average) you can set the `average` parameter to `false`: 
+
+```bash
+$ curl -i "$UMPIRE_URL/check?metric=custom.api.production.requests.per-sec&min=40&range=60&average=false"
+```
+
 The default metrics target is Graphite.  If you'd like to check [Librato Metrics](http://metrics.librato.com), just add a `backend=librato` query param:
 
 ```bash

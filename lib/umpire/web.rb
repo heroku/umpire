@@ -95,7 +95,8 @@ module Umpire
           status empty_ok ? 200 : 404
           JSON.dump({"error" => "no values for metric in range"}) + "\n"
         else
-          value = (points.reduce { |a,b| a+b }) / points.size.to_f
+          value = points.reduce(&:+).to_f
+          value = value / points.size.to_f unless params["average"] == "false"
           if ((min && (value < min)) || (max && (value > max)))
             status 500
           else
