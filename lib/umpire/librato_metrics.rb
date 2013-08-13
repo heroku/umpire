@@ -58,7 +58,7 @@ module Umpire
       metric = metric.split(":").first
 
       if Config.debug?
-        Log.log(options.merge(range: range, metric: metric))
+        Log.log(options.merge(range: range, metric: metric, from: from))
       end
 
       results = client.fetch(metric, options)
@@ -84,6 +84,11 @@ module Umpire
 
       composite = CompositeMetric.for(function)
       values = metrics.map { |m| get_values_for_range(m, range, options) }
+
+      if Config.debug?
+        Log.log(values)
+      end
+
       composite.new(*values).value
     end
 
