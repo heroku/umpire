@@ -68,6 +68,26 @@ module Umpire
           last_response.should be_ok
         end
 
+        describe "average param" do
+          it "returns average when no param is given" do
+            Graphite.stub(:get_values_for_range) { [1,2,3] }
+            get "/check?metric=foo.bar&range=60&min=1"
+            last_response.body.chomp.should eq({value: 2.0}.to_json)
+          end
+
+          it "returns average when average=true" do
+            Graphite.stub(:get_values_for_range) { [1,2,3] }
+            get "/check?metric=foo.bar&range=60&min=1&average=true"
+            last_response.body.chomp.should eq({value: 2.0}.to_json)
+          end
+
+          it "returns the sum when average=false" do
+            Graphite.stub(:get_values_for_range) { [1,2,3] }
+            get "/check?metric=foo.bar&range=60&min=1&average=false"
+            last_response.body.chomp.should eq({value: 6.0}.to_json)
+          end
+        end
+
         describe "with librato" do
           it "should call LibratoMetrics if passed the backend param set to librato" do
             Graphite.should_not_receive(:get_values_for_range)
