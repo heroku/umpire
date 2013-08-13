@@ -58,7 +58,7 @@ module Umpire
       metric = metric.split(":").first
 
       if Config.debug?
-        Log.log({debug: "query"}.merge options.merge(range: range, metric: metric, from: from))
+        Log.log(options.merge(range: range, metric: metric, from: from))
       end
 
       results = client.fetch(metric, options)
@@ -86,7 +86,7 @@ module Umpire
       values = metrics.map { |m| get_values_for_range(m, range, options) }
 
       if Config.debug?
-        Log.log({debug: "returning values", metric: composite.name}.merge values)
+        Log.log(values)
       end
 
       composite.new(*values).value
