@@ -86,6 +86,20 @@ module Umpire
             get "/check?metric=foo.bar&range=60&min=1&average=false"
             last_response.body.chomp.should eq({value: 6.0}.to_json)
           end
+
+          context "with a maximum of 3.0" do
+            it "sum should return 500" do
+              Graphite.stub(:get_values_for_range) { [1,2,3] }
+              get "/check?metric=foo.bar&range=60&max=3.0&average=false"
+              last_response.status.should eq(500)
+            end
+
+            it "average should be ok" do
+              Graphite.stub(:get_values_for_range) { [1,2,3] }
+              get "/check?metric=foo.bar&range=60&max=3.0"
+              last_response.status.should eq(200)
+            end
+          end
         end
 
         describe "with librato" do
