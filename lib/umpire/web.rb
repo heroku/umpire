@@ -75,6 +75,21 @@ module Umpire
         end
 
       end
+
+      def create_aggregator(aggregation_method)
+        case aggregation_method
+        when "avg"
+          Aggregator::Avg.new
+        when "sum"
+          Aggregator::Sum.new
+        when "min"
+          Aggregator::Min.new
+        when "max"
+          Aggregator::Max.new
+        else
+          Aggregator::Avg.new
+        end
+      end
     end
 
     get "/check" do
@@ -88,6 +103,7 @@ module Umpire
       min = (params["min"] && params["min"].to_f)
       max = (params["max"] && params["max"].to_f)
       empty_ok = params["empty_ok"]
+      aggregator = create_aggregator(params["aggregate"])
 
       begin
         points = fetch_points(params)
@@ -95,7 +111,7 @@ module Umpire
           status empty_ok ? 200 : 404
           JSON.dump({"error" => "no values for metric in range"}) + "\n"
         else
-          value = (points.reduce { |a,b| a+b }) / points.size.to_f
+          value = aggregator.aggregate(points)
           if ((min && (value < min)) || (max && (value > max)))
             status 500
           else
