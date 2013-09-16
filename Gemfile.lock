@@ -24,7 +24,7 @@ GEM
       rack
     rack-test (0.6.2)
       rack (>= 1.0)
-    rack-timeout (0.1.0beta2)
+    rack-timeout (0.1.0beta3)
     rake (10.0.3)
     rest-client (1.6.7)
       mime-types (>= 1.16)
@@ -59,7 +59,7 @@ DEPENDENCIES
   librato-metrics
   rack-ssl
   rack-test
-  rack-timeout (= 0.1.0beta2)
+  rack-timeout (= 0.1.0beta3)
   rake
   rest-client
   rspec
