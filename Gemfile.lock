@@ -1,3 +1,9 @@
+GIT
+  remote: https://github.com/freeformz/rack-timeout.git
+  revision: 319256e659f23c75f76a815c5852058ada47b8a9
+  specs:
+    rack-timeout (0.1.0beta2)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -24,7 +30,6 @@ GEM
       rack
     rack-test (0.6.2)
       rack (>= 1.0)
-    rack-timeout (0.1.0beta3)
     rake (10.0.3)
     rest-client (1.6.7)
       mime-types (>= 1.16)
@@ -59,7 +64,7 @@ DEPENDENCIES
   librato-metrics
   rack-ssl
   rack-test
-  rack-timeout (= 0.1.0beta3)
+  rack-timeout!
   rake
   rest-client
   rspec

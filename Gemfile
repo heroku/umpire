@@ -7,7 +7,7 @@ gem 'librato-metrics'
 gem 'sinatra'
 gem 'thin'
 gem 'instruments'
-gem 'rack-timeout', '0.1.0beta3'
+gem 'rack-timeout', git: "https://github.com/freeformz/rack-timeout.git"
 gem 'rack-ssl'
 gem 'rest-client'
 gem 'scrolls'
