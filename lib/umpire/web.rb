@@ -138,8 +138,8 @@ module Umpire
       rescue MetricNotFound
         log(action: "check", at: "metric_not_found", metric: params["metric"])
         halt 404, JSON.dump({"error" => "metric not found"}) + "\n"
-      rescue MetricServiceRequestFailed
-        log(action: "check", at: "metric_service_request_failed", metric: params["metric"])
+      rescue MetricServiceRequestFailed => e
+        log(action: "check", at: "metric_service_request_failed", metric: params["metric"], message: e.message)
         halt 503, JSON.dump({"error" => "connecting to backend metrics service failed with error 'request timed out'"}) + "\n"
       end
     end

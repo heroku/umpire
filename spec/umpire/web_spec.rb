@@ -89,6 +89,13 @@ module Umpire
           last_response.body.should eq({'value' => 1.0, 'min' => 100.0, 'max' => nil, 'num_points' => 1}.to_json + "\n")
         end
 
+        it "should return a 503 if graphite is unavailable" do
+          Graphite.stub(:get_values_for_range) { raise MetricServiceRequestFailed, "it broke" }
+          get "/check?metric=foo.bar&range=60&min=100"
+          last_response.status.should eq(503)
+          last_response.body.should eq({'error' => "connecting to backend metrics service failed with error 'request timed out'"}.to_json + "\n")
+        end
+
         it "should return a 200 if the data is within range" do
           Graphite.stub(:get_values_for_range) { [1] }
           get "/check?metric=foo.bar&range=60&min=1"
@@ -157,6 +164,13 @@ module Umpire
                 with("sum", ["foo.bar", "bar.foo"], 60, {from: "sum_means"}) { [10] }
               get "/check?metric=foo.bar,bar.foo&range=60&min=10&backend=librato&compose=sum&from=sum_means"
               last_response.should be_ok
+            end
+
+            it "should return a 503 if librato is unavailable" do
+              Umpire::LibratoMetrics.should_receive(:get_values_for_range) { raise MetricServiceRequestFailed, "it broke" }
+              get "/check?metric=foo.bar&range=60&min=100&backend=librato"
+              last_response.status.should eq(503)
+              last_response.body.should eq({'error' => "connecting to backend metrics service failed with error 'request timed out'"}.to_json + "\n")
             end
           end
 

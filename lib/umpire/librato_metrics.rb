@@ -74,8 +74,8 @@ module Umpire
       end
     rescue Librato::Metrics::NotFound
       raise MetricNotFound
-    rescue Librato::Metrics::NetworkError
-      raise MetricServiceRequestFailed
+    rescue Librato::Metrics::NetworkError => e
+      raise MetricServiceRequestFailed, e.message
     end
 
     def compose_values_for_range(function, metrics, range, options={})
