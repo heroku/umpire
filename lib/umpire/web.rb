@@ -13,13 +13,19 @@ module Umpire
 
     before do
       content_type :json
+      grab_request_id
     end
 
     after do
       Thread.current[:scope] = nil
+      Thread.current[:request_id] = nil
     end
 
     helpers do
+      def log(data, &blk)
+        self.class.log(data, &blk)
+      end
+
       def protected!
         unless authorized?
           response["WWW-Authenticate"] = %(Basic realm="Restricted Area")
@@ -34,6 +40,10 @@ module Umpire
             true
           end
         end
+      end
+
+      def grab_request_id
+        Thread.current[:request_id] = request.env["HTTP_HEROKU_REQUEST_ID"] || request.env["HTTP_X_REQUEST_ID"]
       end
 
       def valid?(params)
@@ -96,8 +106,8 @@ module Umpire
       protected!
 
       unless valid?(params)
-        status 400
-        next JSON.dump({"error" => "missing parameters"}) + "\n"
+        log(action: "check", at: "invalid_params")
+        halt 400, JSON.dump({"error" => "missing parameters"}) + "\n"
       end
 
       min = (params["min"] && params["min"].to_f)
@@ -108,40 +118,45 @@ module Umpire
       begin
         points = fetch_points(params)
         if points.empty?
+          log(action: "check", metric: params["metric"], at: "no_points")
           status empty_ok ? 200 : 404
           JSON.dump({"error" => "no values for metric in range"}) + "\n"
         else
           value = aggregator.aggregate(points)
           if ((min && (value < min)) || (max && (value > max)))
+            log(action: "check", at: "out_of_range", metric: params["metric"], min: min, max: max, value: value, num_points: points.count)
             status 500
           else
+            log(action: "check", at: "ok", metric: params["metric"], min: min, max: max, value: value, num_points: points.count)
             status 200
           end
-          JSON.dump({"value" => value}) + "\n"
+          JSON.dump({"value" => value, "min" => min, "max" => max, "num_points" => points.count}) + "\n"
         end
       rescue MetricNotComposite => e
-        status 400
-        JSON.dump("error" => e.message) + "\n"
+        log(action: "check", at: "metric_not_composite", metric: params["metric"], error: e.message)
+        halt 400, JSON.dump("error" => e.message) + "\n"
       rescue MetricNotFound
-        status 404
-        JSON.dump({"error" => "metric not found"}) + "\n"
-      rescue MetricServiceRequestFailed
-        status 503
-        JSON.dump({"error" => "connecting to backend metrics service failed with error 'request timed out'"}) + "\n"
+        log(action: "check", at: "metric_not_found", metric: params["metric"])
+        halt 404, JSON.dump({"error" => "metric not found"}) + "\n"
+      rescue MetricServiceRequestFailed => e
+        log(action: "check", at: "metric_service_request_failed", metric: params["metric"], message: e.message)
+        halt 503, JSON.dump({"error" => "connecting to backend metrics service failed with error 'request timed out'"}) + "\n"
       end
     end
 
     get "/health" do
-      status 200
+      log(at: "health")
       JSON.dump({"health" => "ok"}) + "\n"
     end
 
-   get "/*" do
-     status 404
-     JSON.dump({"error" => "not found"}) + "\n"
-   end
+    get "/*" do
+      log(at: "not_found")
+      halt 404, JSON.dump({"error" => "not found"}) + "\n"
+    end
 
     error do
+      e = env["sinatra.error"]
+      log(at: "internal_error", "class" => e.class, message: e.message)
       status 500
       JSON.dump({"error" => "internal server error"}) + "\n"
     end
@@ -175,7 +190,7 @@ module Umpire
 
     def self.log(data, &blk)
       data.delete(:level)
-      Log.log({ns: "web", scope: Thread.current[:scope]}.merge(data), &blk)
+      Log.log({ns: "web", scope: Thread.current[:scope], request_id: Thread.current[:request_id]}.merge(data), &blk)
     end
   end
 end
