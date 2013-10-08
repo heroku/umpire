@@ -29,6 +29,7 @@ module Umpire
         it "should return a 400 if params are not passed" do
           get "/check"
           last_response.status.should eq(400)
+          last_response.body.should eq({'error' => 'missing parameters'}.to_json + "\n")
         end
 
         it "should call Graphite.get_values_for_range" do
@@ -48,48 +49,51 @@ module Umpire
           Graphite.stub(:get_values_for_range) { [] }
           get "/check?metric=foo.bar&range=60&max=100&empty_ok=true"
           last_response.status.should eq(200)
+          last_response.body.should eq({'error' => 'no values for metric in range'}.to_json + "\n")
         end
 
         it "should return data if there is data" do
           Graphite.stub(:get_values_for_range) { [1] }
           get "/check?metric=foo.bar&range=60&max=100&empty_ok=true"
-          last_response.body.should eq({'value' => 1.0}.to_json + "\n")
+          last_response.body.should eq({'value' => 1.0, 'min' => nil, 'max' => 100.0, 'num_points' => 1}.to_json + "\n")
         end
 
         it "should return an average value of the metric if passed 'aggregate' param set to 'avg'" do
           Graphite.stub(:get_values_for_range) { [1,2,3,4,5] }
           get "/check?metric=foo.bar&range=60&max=100&aggregate=avg"
-          last_response.body.should eq({'value' => 3.0}.to_json + "\n")
+          last_response.body.should eq({'value' => 3.0, 'min' => nil, 'max' => 100.0, 'num_points' => 5}.to_json + "\n")
         end
 
         it "should return a sum of the values of the metric if passed 'aggregate' param set to 'sum'" do
           Graphite.stub(:get_values_for_range) { [1,2,3,4,5] }
           get "/check?metric=foo.bar&range=60&max=100&aggregate=sum"
-          last_response.body.should eq({'value' => 15.0}.to_json + "\n")
+          last_response.body.should eq({'value' => 15.0, 'min' => nil, 'max' => 100.0, 'num_points' => 5}.to_json + "\n")
         end
 
         it "should return a min value of the metric if passed 'aggregate' param set to 'min'" do
           Graphite.stub(:get_values_for_range) { [1,2,3,4,5] }
           get "/check?metric=foo.bar&range=60&max=100&aggregate=min"
-          last_response.body.should eq({'value' => 1.0}.to_json + "\n")
+          last_response.body.should eq({'value' => 1.0, 'min' => nil, 'max' => 100.0, 'num_points' => 5}.to_json + "\n")
         end
 
         it "should return a max value of the metric if passed 'aggregate' param set to 'max'" do
           Graphite.stub(:get_values_for_range) { [1,2,3,4,5] }
           get "/check?metric=foo.bar&range=60&max=100&aggregate=max"
-          last_response.body.should eq({'value' => 5.0}.to_json + "\n")
+          last_response.body.should eq({'value' => 5.0, 'min' => nil, 'max' => 100.0, 'num_points' => 5}.to_json + "\n")
         end
 
         it "should return a 500 if the data is out of range" do
           Graphite.stub(:get_values_for_range) { [1] }
           get "/check?metric=foo.bar&range=60&min=100"
           last_response.status.should eq(500)
+          last_response.body.should eq({'value' => 1.0, 'min' => 100.0, 'max' => nil, 'num_points' => 1}.to_json + "\n")
         end
 
         it "should return a 200 if the data is within range" do
           Graphite.stub(:get_values_for_range) { [1] }
           get "/check?metric=foo.bar&range=60&min=1"
           last_response.should be_ok
+          last_response.body.should eq({'value' => 1.0, 'min' => 1.0, 'max' => nil, 'num_points' => 1}.to_json + "\n")
         end
 
         describe "with librato" do
