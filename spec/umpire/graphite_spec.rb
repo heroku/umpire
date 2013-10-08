@@ -32,7 +32,7 @@ describe Umpire::Graphite do
 
     it "should raise an exception if the graphite HTTP request fails for any reason" do
       stub_request(:get, "#{graphite_url}/render/?format=json&from=-#{range}s&target=#{metric}").to_timeout
-      lambda { Umpire::Graphite.get_values_for_range(graphite_url, metric, range) }.should raise_error(MetricServiceRequestFailed)
+      lambda { Umpire::Graphite.get_values_for_range(graphite_url, metric, range) }.should raise_error(MetricServiceRequestFailed, /timeout/i)
     end
   end
 
