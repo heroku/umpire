@@ -118,28 +118,28 @@ module Umpire
       begin
         points = fetch_points(params)
         if points.empty?
-          log(action: "check", metric: params["metric"], at: "no_points")
+          log(action: "check", metric: params["metric"], source: params["source"], at: "no_points")
           status empty_ok ? 200 : 404
           JSON.dump({"error" => "no values for metric in range"}) + "\n"
         else
           value = aggregator.aggregate(points)
           if ((min && (value < min)) || (max && (value > max)))
-            log(action: "check", at: "out_of_range", metric: params["metric"], min: min, max: max, value: value, num_points: points.count)
+            log(action: "check", at: "out_of_range", metric: params["metric"], source: params["source"], min: min, max: max, value: value, num_points: points.count)
             status 500
           else
-            log(action: "check", at: "ok", metric: params["metric"], min: min, max: max, value: value, num_points: points.count)
+            log(action: "check", at: "ok", metric: params["metric"], source: params["source"], min: min, max: max, value: value, num_points: points.count)
             status 200
           end
           JSON.dump({"value" => value, "min" => min, "max" => max, "num_points" => points.count}) + "\n"
         end
       rescue MetricNotComposite => e
-        log(action: "check", at: "metric_not_composite", metric: params["metric"], error: e.message)
+        log(action: "check", at: "metric_not_composite", metric: params["metric"], source: params["source"], error: e.message)
         halt 400, JSON.dump("error" => e.message) + "\n"
       rescue MetricNotFound
-        log(action: "check", at: "metric_not_found", metric: params["metric"])
+        log(action: "check", at: "metric_not_found", source: params["source"], metric: params["metric"])
         halt 404, JSON.dump({"error" => "metric not found"}) + "\n"
       rescue MetricServiceRequestFailed => e
-        log(action: "check", at: "metric_service_request_failed", metric: params["metric"], message: e.message)
+        log(action: "check", at: "metric_service_request_failed", metric: params["metric"], source: params["source"], message: e.message)
         halt 503, JSON.dump({"error" => "connecting to backend metrics service failed with error 'request timed out'"}) + "\n"
       end
     end
