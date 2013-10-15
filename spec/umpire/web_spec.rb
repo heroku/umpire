@@ -52,6 +52,13 @@ module Umpire
           last_response.body.should eq({'error' => 'no values for metric in range'}.to_json + "\n")
         end
 
+        it "should return a 400 if an invalid value for empty_ok is passed" do
+          Graphite.stub(:get_values_for_range) { [] }
+          get "/check?metric=foo.bar&range=60&max=100&empty_ok=no"
+          last_response.status.should eq(400)
+          last_response.body.should eq({'error' => 'empty_ok must be one of yes/y/1/true'}.to_json + "\n")
+        end
+
         it "should return data if there is data" do
           Graphite.stub(:get_values_for_range) { [1] }
           get "/check?metric=foo.bar&range=60&max=100&empty_ok=true"

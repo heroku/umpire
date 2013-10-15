@@ -112,7 +112,13 @@ module Umpire
 
       min = (params["min"] && params["min"].to_f)
       max = (params["max"] && params["max"].to_f)
-      empty_ok = params["empty_ok"]
+
+      if params["empty_ok"] && !%w[yes y 1 true].include?(params["empty_ok"])
+        log(action: "check", at: "invalid_empty_ok")
+        halt 400, JSON.dump({"error" => "empty_ok must be one of yes/y/1/true"}) + "\n"
+      end
+      empty_ok = !!params["empty_ok"]
+
       aggregator = create_aggregator(params["aggregate"])
 
       begin
