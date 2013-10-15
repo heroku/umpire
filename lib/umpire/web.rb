@@ -62,13 +62,9 @@ module Umpire
           compose = params["compose"]
 
           opts = {}
-
-          if source = params["source"]
-            opts.merge!(source: source)
-          end
-
-          if from = params["from"]
-            opts.merge!(from: from)
+          %w{source from resolution}.each do |key|
+            next unless val = params[key]
+            opts[key.to_sym] = val
           end
 
           if !compose && metric.split(",").size > 1
