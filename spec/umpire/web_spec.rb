@@ -29,7 +29,7 @@ module Umpire
         it "should return a 400 if params are not passed" do
           get "/check"
           last_response.status.should eq(400)
-          last_response.body.should eq({'error' => 'missing parameters'}.to_json + "\n")
+          last_response.body.should eq({'error' => 'metric is required, range is required, one of min or max are required'}.to_json + "\n")
         end
 
         it "should call Graphite.get_values_for_range" do
@@ -50,6 +50,13 @@ module Umpire
           get "/check?metric=foo.bar&range=60&max=100&empty_ok=true"
           last_response.status.should eq(200)
           last_response.body.should eq({'error' => 'no values for metric in range'}.to_json + "\n")
+        end
+
+        it "should return a 400 if an invalid value for empty_ok is passed" do
+          Graphite.stub(:get_values_for_range) { [] }
+          get "/check?metric=foo.bar&range=60&max=100&empty_ok=no"
+          last_response.status.should eq(400)
+          last_response.body.should eq({'error' => 'empty_ok must be one of yes/y/1/true'}.to_json + "\n")
         end
 
         it "should return data if there is data" do
