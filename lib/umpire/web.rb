@@ -47,7 +47,20 @@ module Umpire
       end
 
       def valid?(params)
-        params["metric"] && (params["min"] || params["max"]) && params["range"]
+        errors = []
+        if !params["metric"]
+          errors.push("metric is required")
+        end
+        if !params["range"]
+          errors.push("range is required")
+        end
+        if !params["min"] && !params["max"]
+          errors.push("one of min or max are required")
+        end
+        if params["empty_ok"] && !%w[yes y 1 true].include?(params["empty_ok"].to_s.downcase)
+          errors.push("empty_ok must be one of yes/y/1/true")
+        end
+        errors
       end
 
       def use_librato_backend?
@@ -105,18 +118,15 @@ module Umpire
     get "/check" do
       protected!
 
-      unless valid?(params)
+      param_errors = valid?(params)
+      unless param_errors.empty?
         log(action: "check", at: "invalid_params")
-        halt 400, JSON.dump({"error" => "missing parameters"}) + "\n"
+        halt 400, JSON.dump({"error" => param_errors.join(", ")}) + "\n"
       end
 
       min = (params["min"] && params["min"].to_f)
       max = (params["max"] && params["max"].to_f)
 
-      if params["empty_ok"] && !%w[yes y 1 true].include?(params["empty_ok"])
-        log(action: "check", at: "invalid_empty_ok")
-        halt 400, JSON.dump({"error" => "empty_ok must be one of yes/y/1/true"}) + "\n"
-      end
       empty_ok = !!params["empty_ok"]
 
       aggregator = create_aggregator(params["aggregate"])
