@@ -134,8 +134,12 @@ module Umpire
       begin
         points = fetch_points(params)
         if points.empty?
-          log(action: "check", metric: params["metric"], source: params["source"], at: "no_points")
-          status empty_ok ? 200 : 404
+          if empty_ok
+            log(action: "check", metric: params["metric"], source: params["source"], at: "no_points_empty_ok")
+          else
+            status 404
+            log(action: "check", metric: params["metric"], source: params["source"], at: "no_points")
+          end
           JSON.dump({"error" => "no values for metric in range"}) + "\n"
         else
           value = aggregator.aggregate(points)
