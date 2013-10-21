@@ -91,6 +91,7 @@ module Umpire
       unless @client
         @client = ::Librato::Metrics::Client.new
         @client.authenticate Config.librato_email, Config.librato_key
+        @client.agent_identifier("umpire", Config.deploy, Config.librato_email)
       end
       @client
     end
