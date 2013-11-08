@@ -8,7 +8,7 @@ module Umpire
       begin
         json = RestClient.get(url(graphite_url, metric, range))
         data = JSON.parse(json)
-        data.empty? ? raise(MetricNotFound) : data.first["datapoints"].map { |v, _| v }.compact
+        data.empty? ? raise(MetricNotFound) : data.flat_map { |metric| metric["datapoints"] }.map(&:first).compact
       rescue RestClient::RequestFailed => e
         raise MetricServiceRequestFailed, e.message
       end
