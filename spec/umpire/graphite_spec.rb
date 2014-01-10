@@ -6,8 +6,15 @@ describe Umpire::Graphite do
   let(:range) { 60 }
 
   describe "get_values_for_range" do
-    let(:stub_request_with_values) { stub_request(:get, "#{graphite_url}/render/?format=json&from=-#{range}s&target=#{metric}").to_return(:body => [{"target"=>metric, "datapoints"=>[[4.47, 1348851060]]}].to_json) }
-    let(:stub_request_without_values) { stub_request(:get, "#{graphite_url}/render/?format=json&from=-#{range}s&target=#{metric}").to_return(:body => [].to_json) }
+    let(:stub_request_with_values) do
+      stub_request(:get, "#{graphite_url}/render/?format=json&from=-#{range}s&target=#{metric}")
+        .to_return(:body => [{"target"=>metric, "datapoints"=>[[4.47, 1348851060]]}].to_json)
+    end
+
+    let(:stub_request_without_values) do
+      stub_request(:get, "#{graphite_url}/render/?format=json&from=-#{range}s&target=#{metric}")
+        .to_return(:body => [].to_json)
+    end
 
     it "should return an Array" do
       stub_request_with_values

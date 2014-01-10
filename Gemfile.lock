@@ -7,10 +7,12 @@ GIT
 GEM
   remote: https://rubygems.org/
   specs:
-    addressable (2.3.3)
+    addressable (2.3.5)
     aggregate (0.2.2)
-    crack (0.3.2)
+    crack (0.4.1)
+      safe_yaml (~> 0.9.0)
     diff-lcs (1.1.3)
+    excon (0.31.0)
     faraday (0.8.5)
       multipart-post (~> 1.1)
     instruments (0.0.9)
@@ -18,7 +20,6 @@ GEM
       aggregate (~> 0.2.2)
       faraday (~> 0.7)
       multi_json
-    mime-types (1.21)
     multi_json (1.6.1)
     multipart-post (1.1.5)
     puma (2.7.1)
@@ -31,8 +32,6 @@ GEM
     rack-test (0.6.2)
       rack (>= 1.0)
     rake (10.0.3)
-    rest-client (1.6.7)
-      mime-types (>= 1.16)
     rspec (2.12.0)
       rspec-core (~> 2.12.0)
       rspec-expectations (~> 2.12.0)
@@ -41,13 +40,14 @@ GEM
     rspec-expectations (2.12.1)
       diff-lcs (~> 1.1.3)
     rspec-mocks (2.12.2)
+    safe_yaml (0.9.7)
     scrolls (0.2.4)
     sinatra (1.4.4)
       rack (~> 1.4)
       rack-protection (~> 1.4)
       tilt (~> 1.3, >= 1.3.4)
     tilt (1.4.1)
-    webmock (1.9.3)
+    webmock (1.16.1)
       addressable (>= 2.2.7)
       crack (>= 0.3.2)
     yajl-ruby (1.1.0)
@@ -56,6 +56,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  excon
   instruments
   librato-metrics
   puma
@@ -63,7 +64,6 @@ DEPENDENCIES
   rack-test
   rack-timeout!
   rake
-  rest-client
   rspec
   scrolls
   sinatra

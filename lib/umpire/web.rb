@@ -4,6 +4,8 @@ require 'rack/ssl'
 require 'rack-timeout'
 require "instruments"
 
+require "umpire"
+
 module Umpire
   class Web < Sinatra::Base
     enable :dump_errors

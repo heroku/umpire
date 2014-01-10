@@ -9,7 +9,7 @@ gem 'puma'
 gem 'instruments'
 gem 'rack-timeout', git: "https://github.com/freeformz/rack-timeout.git"
 gem 'rack-ssl'
-gem 'rest-client'
+gem 'excon'
 gem 'scrolls'
 
 group :development do

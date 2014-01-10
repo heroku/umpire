@@ -1,6 +1,6 @@
 require "yajl/json_gem"
 require "librato/metrics"
-require "restclient"
+require "excon"
 
 require "umpire/config"
 require "umpire/exceptions"
