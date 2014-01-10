@@ -2,7 +2,6 @@ require "puma"
 require "sinatra/base"
 require 'rack/ssl'
 require 'rack-timeout'
-require "instruments"
 
 require "umpire"
 
@@ -10,8 +9,6 @@ module Umpire
   class Web < Sinatra::Base
     enable :dump_errors
     disable :show_exceptions
-    register Sinatra::Instrumentation
-    instrument_routes
 
     use Rack::SSL if Config.force_https?
     use Rack::Timeout unless test?
@@ -206,5 +203,3 @@ module Umpire
     end
   end
 end
-
-Instruments.defaults = {logger: Umpire::Web, method: :log}

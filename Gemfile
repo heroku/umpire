@@ -6,7 +6,6 @@ gem 'yajl-ruby'
 gem 'librato-metrics'
 gem 'sinatra'
 gem 'puma'
-gem 'instruments'
 gem 'rack-timeout', git: "https://github.com/freeformz/rack-timeout.git"
 gem 'rack-ssl'
 gem 'excon'

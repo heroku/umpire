@@ -15,7 +15,6 @@ GEM
     excon (0.31.0)
     faraday (0.8.5)
       multipart-post (~> 1.1)
-    instruments (0.0.9)
     librato-metrics (1.0.3)
       aggregate (~> 0.2.2)
       faraday (~> 0.7)
@@ -57,7 +56,6 @@ PLATFORMS
 
 DEPENDENCIES
   excon
-  instruments
   librato-metrics
   puma
   rack-ssl
