@@ -8,7 +8,6 @@ module Umpire
 
     def self.deploy; env!("DEPLOY"); end
     def self.graphite_url; env!("GRAPHITE_URL"); end
-    def self.port; env!("PORT"); end
     def self.force_https?; env!("FORCE_HTTPS") == "true"; end
     def self.api_key; env!("API_KEY"); end
     def self.librato_email; env!("LIBRATO_EMAIL"); end
