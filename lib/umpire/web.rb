@@ -12,7 +12,7 @@ module Umpire
     instrument_routes
 
     use Rack::SSL if Config.force_https?
-    use Rack::Timeout
+    use Rack::Timeout unless test?
     Rack::Timeout.timeout = 29
 
     configure do
