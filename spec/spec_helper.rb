@@ -1,6 +1,5 @@
 require "webmock/rspec"
-
-require "umpire"
+require "rack/test"
 
 RSpec.configure do |config|
   config.treat_symbols_as_metadata_keys_with_true_values = true
@@ -18,3 +17,8 @@ ENV["API_KEY_DEPRECATED"] = "deprecated"
 
 ENV["API_KEY_PINGDOM"] = "test-2"
 ENV["API_KEY_PINGDOM_DEPRECATED"] = "deprecated-2"
+
+ENV["RACK_ENV"] = "test"
+
+require "umpire"
+require "umpire/web"

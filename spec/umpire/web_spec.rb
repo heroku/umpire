@@ -1,9 +1,4 @@
-ENV['RACK_ENV'] = 'test'
-
 require "spec_helper"
-require "rack/test"
-
-require "umpire/web"
 
 describe Umpire::Web do
   include Rack::Test::Methods
