@@ -5,7 +5,7 @@ ruby "1.9.3"
 gem 'yajl-ruby'
 gem 'librato-metrics'
 gem 'sinatra'
-gem 'thin'
+gem 'puma'
 gem 'instruments'
 gem 'rack-timeout', git: "https://github.com/freeformz/rack-timeout.git"
 gem 'rack-ssl'

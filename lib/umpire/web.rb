@@ -1,4 +1,4 @@
-require "thin"
+require "puma"
 require "sinatra/base"
 require 'rack/ssl'
 require 'rack-timeout'
@@ -10,6 +10,14 @@ module Umpire
     disable :show_exceptions
     register Sinatra::Instrumentation
     instrument_routes
+
+    use Rack::SSL if Config.force_https?
+    use Rack::Timeout
+    Rack::Timeout.timeout = 29
+
+    configure do
+      set :server, :puma
+    end
 
     before do
       content_type :json
@@ -178,30 +186,16 @@ module Umpire
     end
 
     def self.start
-      log(fn: "start", at: "build")
-      @server = Thin::Server.new("0.0.0.0", Config.port) do
-
-        if Config.force_https?
-          use Rack::SSL
-        end
-
-        use Rack::Timeout
-        Rack::Timeout.timeout = 29
-
-        run Web.new
-      end
-
       log(fn: "start", at: "install_trap")
       Signal.trap("TERM") do
         log(fn: "trap")
-        @server.stop!
+        stop!
         log(fn: "trap", at: "exit", status: 0)
         Kernel.exit!(0)
       end
 
-      @server.start
-
-      log(fn: "start", at: run, port: Config.port)
+      log(fn: "start", at: "run_server")
+      run!
     end
 
     def self.log(data, &blk)
