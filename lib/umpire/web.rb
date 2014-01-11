@@ -134,46 +134,48 @@ module Umpire
 
       aggregator = create_aggregator(params["aggregate"])
 
-      begin
-        points = fetch_points(params)
-        if points.empty?
-          if empty_ok
-            log(action: "check", metric: params["metric"], source: params["source"], at: "no_points_empty_ok")
+      Scrolls.context(action: "check", metric: params["metric"], source: params["source"]) do
+        begin
+          points = fetch_points(params)
+          if points.empty?
+            if empty_ok
+              log(at: "no_points_empty_ok")
+            else
+              status 404
+              log(at: "no_points")
+            end
+            JSON.dump({"error" => "no values for metric in range"}) + "\n"
           else
-            status 404
-            log(action: "check", metric: params["metric"], source: params["source"], at: "no_points")
+            value = aggregator.aggregate(points)
+            if ((min && (value < min)) || (max && (value > max)))
+              log(at: "out_of_range", min: min, max: max, value: value, num_points: points.count)
+              status 500
+            else
+              log(at: "ok", min: min, max: max, value: value, num_points: points.count)
+              status 200
+            end
+            JSON.dump({"value" => value, "min" => min, "max" => max, "num_points" => points.count}) + "\n"
           end
-          JSON.dump({"error" => "no values for metric in range"}) + "\n"
-        else
-          value = aggregator.aggregate(points)
-          if ((min && (value < min)) || (max && (value > max)))
-            log(action: "check", at: "out_of_range", metric: params["metric"], source: params["source"], min: min, max: max, value: value, num_points: points.count)
-            status 500
-          else
-            log(action: "check", at: "ok", metric: params["metric"], source: params["source"], min: min, max: max, value: value, num_points: points.count)
-            status 200
-          end
-          JSON.dump({"value" => value, "min" => min, "max" => max, "num_points" => points.count}) + "\n"
+        rescue MetricNotComposite => e
+          log(at: "metric_not_composite", error: e.message)
+          halt 400, JSON.dump("error" => e.message) + "\n"
+        rescue MetricNotFound
+          log(at: "metric_not_found")
+          halt 404, JSON.dump({"error" => "metric not found"}) + "\n"
+        rescue MetricServiceRequestFailed => e
+          log(at: "metric_service_request_failed", message: e.message)
+          halt 503, JSON.dump({"error" => "connecting to backend metrics service failed with error 'request timed out'"}) + "\n"
         end
-      rescue MetricNotComposite => e
-        log(action: "check", at: "metric_not_composite", metric: params["metric"], source: params["source"], error: e.message)
-        halt 400, JSON.dump("error" => e.message) + "\n"
-      rescue MetricNotFound
-        log(action: "check", at: "metric_not_found", source: params["source"], metric: params["metric"])
-        halt 404, JSON.dump({"error" => "metric not found"}) + "\n"
-      rescue MetricServiceRequestFailed => e
-        log(action: "check", at: "metric_service_request_failed", metric: params["metric"], source: params["source"], message: e.message)
-        halt 503, JSON.dump({"error" => "connecting to backend metrics service failed with error 'request timed out'"}) + "\n"
       end
     end
 
     get "/health" do
-      log(at: "health")
+      log(action: "health")
       JSON.dump({"health" => "ok"}) + "\n"
     end
 
     get "/*" do
-      log(at: "not_found")
+      log(action: "not_found")
       halt 404, JSON.dump({"error" => "not found"}) + "\n"
     end
 
