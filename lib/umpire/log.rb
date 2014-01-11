@@ -7,7 +7,7 @@ module Umpire
       if Config.deploy == "test"
         blk.call if blk
       else
-        Scrolls.log({app: "umpire", deploy: Config.deploy}.merge(data), &blk)
+        Scrolls.log({app: Config.app, deploy: Config.deploy}.merge(data), &blk)
       end
     end
   end

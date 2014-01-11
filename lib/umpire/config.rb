@@ -13,6 +13,10 @@ module Umpire
     def self.librato_email; env!("LIBRATO_EMAIL"); end
     def self.librato_key; env!("LIBRATO_KEY"); end
 
+    def self.app
+      ENV["APP"] || "umpire"
+    end
+
     def self.debug?
       !!ENV["DEBUG"]
     end
