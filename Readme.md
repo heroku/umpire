@@ -62,6 +62,7 @@ $ curl -i "$UMPIRE_URL/check?metric=custom.api.production.requests.per-sec&max=4
 $ rvm use 1.9.2
 $ bundle install
 $ export DEPLOY=dev
+$ export APP=umpire-$DEPLOY
 $ export FORCE_HTTPS=false
 $ export API_KEY=secret
 $ export GRAPHITE_URL=https://graphite.yourdomain.com
@@ -75,6 +76,7 @@ $ curl -i "$UMPIRE_URL/check?metric=pulse.nginx-requests-per-second&max=400&rang
 
 ```bash
 $ export DEPLOY=production/staging/you
+$ export APP=umpire-$DEPLOY
 $ export API_KEY=$(openssl rand -hex 16)
 $ heroku create -s cedar -r $DEPLOY umpire-$DEPLOY
 $ heroku config:add -r $DEPLOY DEPLOY=$DEPLOY
