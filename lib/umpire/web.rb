@@ -27,7 +27,7 @@ module Umpire
     after do
       Thread.current[:scope] = nil
       Thread.current[:request_id] = nil
-      Scrolls::Log.add_global_context(:request_id => nil)
+      Umpire::Log.add_global_context(:request_id => nil)
     end
 
     helpers do
@@ -57,7 +57,7 @@ module Umpire
 
       def grab_request_id
         Thread.current[:request_id] = request.env["HTTP_HEROKU_REQUEST_ID"] || request.env["HTTP_X_REQUEST_ID"] || SecureRandom.hex(16)
-        Scrolls::Log.add_global_context(:request_id => Thread.current[:request_id])
+        Umpire::Log.add_global_context(:request_id => Thread.current[:request_id])
       end
 
       def valid?(params)
@@ -141,7 +141,7 @@ module Umpire
 
       aggregator = create_aggregator(params["aggregate"])
 
-      Scrolls.context(action: "check", metric: params["metric"], source: params["source"]) do
+      Umpire::Log.context(action: "check", metric: params["metric"], source: params["source"]) do
         begin
           points = fetch_points(params)
           if points.empty?

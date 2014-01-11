@@ -10,5 +10,13 @@ module Umpire
         Scrolls.log({app: Config.app, deploy: Config.deploy}.merge(data), &blk)
       end
     end
+
+    def self.context(data, &blk)
+      Scrolls.context(data, &blk)
+    end
+
+    def self.add_global_context(data)
+      Scrolls.add_global_context(data)
+    end
   end
 end
