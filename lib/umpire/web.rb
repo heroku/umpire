@@ -51,6 +51,10 @@ module Umpire
         end
       end
 
+      def request_id
+        Thread.current[:request_id]
+      end
+
       def grab_request_id
         Thread.current[:request_id] = request.env["HTTP_HEROKU_REQUEST_ID"] || request.env["HTTP_X_REQUEST_ID"] || SecureRandom.hex(16)
         Scrolls::Log.add_global_context(:request_id => Thread.current[:request_id])
@@ -127,7 +131,7 @@ module Umpire
       param_errors = valid?(params)
       unless param_errors.empty?
         log(action: "check", at: "invalid_params")
-        halt 400, JSON.dump({"error" => param_errors.join(", ")}) + "\n"
+        halt 400, JSON.dump({"error" => param_errors.join(", "), "request_id" => request_id}) + "\n"
       end
 
       min = (params["min"] && params["min"].to_f)
@@ -147,7 +151,7 @@ module Umpire
               status 404
               log(at: "no_points")
             end
-            JSON.dump({"error" => "no values for metric in range"}) + "\n"
+            JSON.dump({"error" => "no values for metric in range", "request_id" => request_id}) + "\n"
           else
             value = aggregator.aggregate(points)
             if ((min && (value < min)) || (max && (value > max)))
@@ -157,17 +161,17 @@ module Umpire
               log(at: "ok", min: min, max: max, value: value, num_points: points.count)
               status 200
             end
-            JSON.dump({"value" => value, "min" => min, "max" => max, "num_points" => points.count}) + "\n"
+            JSON.dump({"value" => value, "min" => min, "max" => max, "num_points" => points.count, "request_id" => request_id}) + "\n"
           end
         rescue MetricNotComposite => e
           log(at: "metric_not_composite", error: e.message)
-          halt 400, JSON.dump("error" => e.message) + "\n"
+          halt 400, JSON.dump("error" => e.message, "request_id" => request_id) + "\n"
         rescue MetricNotFound
           log(at: "metric_not_found")
-          halt 404, JSON.dump({"error" => "metric not found"}) + "\n"
+          halt 404, JSON.dump({"error" => "metric not found", "request_id" => request_id}) + "\n"
         rescue MetricServiceRequestFailed => e
           log(at: "metric_service_request_failed", message: e.message)
-          halt 503, JSON.dump({"error" => "connecting to backend metrics service failed with error 'request timed out'"}) + "\n"
+          halt 503, JSON.dump({"error" => "connecting to backend metrics service failed with error 'request timed out'", "request_id" => request_id}) + "\n"
         end
       end
     end

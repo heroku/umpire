@@ -8,6 +8,9 @@ describe Umpire::Web do
   end
 
   describe "GET /check" do
+    let(:request_id) { "r12345" }
+    let(:request_headers) { { "HTTP_X_REQUEST_ID" => request_id } }
+
     context "without basic auth" do
       it "should require basic auth" do
         get "/check"
@@ -21,9 +24,10 @@ describe Umpire::Web do
       end
 
       it "should return a 400 if params are not passed" do
-        get "/check"
+        get "/check", {}, request_headers
+
         last_response.status.should eq(400)
-        last_response.body.should eq({'error' => 'metric is required, range is required, one of min or max are required'}.to_json + "\n")
+        last_response.body.should eq({'error' => 'metric is required, range is required, one of min or max are required', 'request_id' => request_id}.to_json + "\n")
       end
 
       it "should call Graphite.get_values_for_range" do
@@ -41,67 +45,67 @@ describe Umpire::Web do
 
       it "should return a 200 if there are no data points and empty_ok is passed" do
         Umpire::Graphite.stub(:get_values_for_range) { [] }
-        get "/check?metric=foo.bar&range=60&max=100&empty_ok=true"
+        get "/check?metric=foo.bar&range=60&max=100&empty_ok=true", {}, request_headers
         last_response.status.should eq(200)
-        last_response.body.should eq({'error' => 'no values for metric in range'}.to_json + "\n")
+        last_response.body.should eq({'error' => 'no values for metric in range', 'request_id' => request_id}.to_json + "\n")
       end
 
       it "should return a 400 if an invalid value for empty_ok is passed" do
         Umpire::Graphite.stub(:get_values_for_range) { [] }
-        get "/check?metric=foo.bar&range=60&max=100&empty_ok=no"
+        get "/check?metric=foo.bar&range=60&max=100&empty_ok=no", {}, request_headers
         last_response.status.should eq(400)
-        last_response.body.should eq({'error' => 'empty_ok must be one of yes/y/1/true'}.to_json + "\n")
+        last_response.body.should eq({'error' => 'empty_ok must be one of yes/y/1/true', 'request_id' => request_id}.to_json + "\n")
       end
 
       it "should return data if there is data" do
         Umpire::Graphite.stub(:get_values_for_range) { [1] }
-        get "/check?metric=foo.bar&range=60&max=100&empty_ok=true"
-        last_response.body.should eq({'value' => 1.0, 'min' => nil, 'max' => 100.0, 'num_points' => 1}.to_json + "\n")
+        get "/check?metric=foo.bar&range=60&max=100&empty_ok=true", {}, request_headers
+        last_response.body.should eq({'value' => 1.0, 'min' => nil, 'max' => 100.0, 'num_points' => 1, 'request_id' => request_id}.to_json + "\n")
       end
 
       it "should return an average value of the metric if passed 'aggregate' param set to 'avg'" do
         Umpire::Graphite.stub(:get_values_for_range) { [1,2,3,4,5] }
-        get "/check?metric=foo.bar&range=60&max=100&aggregate=avg"
-        last_response.body.should eq({'value' => 3.0, 'min' => nil, 'max' => 100.0, 'num_points' => 5}.to_json + "\n")
+        get "/check?metric=foo.bar&range=60&max=100&aggregate=avg", {}, request_headers
+        last_response.body.should eq({'value' => 3.0, 'min' => nil, 'max' => 100.0, 'num_points' => 5, 'request_id' => request_id}.to_json + "\n")
       end
 
       it "should return a sum of the values of the metric if passed 'aggregate' param set to 'sum'" do
         Umpire::Graphite.stub(:get_values_for_range) { [1,2,3,4,5] }
-        get "/check?metric=foo.bar&range=60&max=100&aggregate=sum"
-        last_response.body.should eq({'value' => 15.0, 'min' => nil, 'max' => 100.0, 'num_points' => 5}.to_json + "\n")
+        get "/check?metric=foo.bar&range=60&max=100&aggregate=sum", {}, request_headers
+        last_response.body.should eq({'value' => 15.0, 'min' => nil, 'max' => 100.0, 'num_points' => 5, 'request_id' => request_id}.to_json + "\n")
       end
 
       it "should return a min value of the metric if passed 'aggregate' param set to 'min'" do
         Umpire::Graphite.stub(:get_values_for_range) { [1,2,3,4,5] }
-        get "/check?metric=foo.bar&range=60&max=100&aggregate=min"
-        last_response.body.should eq({'value' => 1.0, 'min' => nil, 'max' => 100.0, 'num_points' => 5}.to_json + "\n")
+        get "/check?metric=foo.bar&range=60&max=100&aggregate=min", {}, request_headers
+        last_response.body.should eq({'value' => 1.0, 'min' => nil, 'max' => 100.0, 'num_points' => 5, 'request_id' => request_id}.to_json + "\n")
       end
 
       it "should return a max value of the metric if passed 'aggregate' param set to 'max'" do
         Umpire::Graphite.stub(:get_values_for_range) { [1,2,3,4,5] }
-        get "/check?metric=foo.bar&range=60&max=100&aggregate=max"
-        last_response.body.should eq({'value' => 5.0, 'min' => nil, 'max' => 100.0, 'num_points' => 5}.to_json + "\n")
+        get "/check?metric=foo.bar&range=60&max=100&aggregate=max", {}, request_headers
+        last_response.body.should eq({'value' => 5.0, 'min' => nil, 'max' => 100.0, 'num_points' => 5, 'request_id' => request_id}.to_json + "\n")
       end
 
       it "should return a 500 if the data is out of range" do
         Umpire::Graphite.stub(:get_values_for_range) { [1] }
-        get "/check?metric=foo.bar&range=60&min=100"
+        get "/check?metric=foo.bar&range=60&min=100", {}, request_headers
         last_response.status.should eq(500)
-        last_response.body.should eq({'value' => 1.0, 'min' => 100.0, 'max' => nil, 'num_points' => 1}.to_json + "\n")
+        last_response.body.should eq({'value' => 1.0, 'min' => 100.0, 'max' => nil, 'num_points' => 1, 'request_id' => request_id}.to_json + "\n")
       end
 
       it "should return a 503 if graphite is unavailable" do
         Umpire::Graphite.stub(:get_values_for_range) { raise MetricServiceRequestFailed, "it broke" }
-        get "/check?metric=foo.bar&range=60&min=100"
+        get "/check?metric=foo.bar&range=60&min=100", {}, request_headers
         last_response.status.should eq(503)
-        last_response.body.should eq({'error' => "connecting to backend metrics service failed with error 'request timed out'"}.to_json + "\n")
+        last_response.body.should eq({'error' => "connecting to backend metrics service failed with error 'request timed out'", 'request_id' => request_id}.to_json + "\n")
       end
 
       it "should return a 200 if the data is within range" do
         Umpire::Graphite.stub(:get_values_for_range) { [1] }
-        get "/check?metric=foo.bar&range=60&min=1"
+        get "/check?metric=foo.bar&range=60&min=1", {}, request_headers
         last_response.should be_ok
-        last_response.body.should eq({'value' => 1.0, 'min' => 1.0, 'max' => nil, 'num_points' => 1}.to_json + "\n")
+        last_response.body.should eq({'value' => 1.0, 'min' => 1.0, 'max' => nil, 'num_points' => 1, 'request_id' => request_id}.to_json + "\n")
       end
 
       describe "with librato" do
@@ -169,9 +173,9 @@ describe Umpire::Web do
 
           it "should return a 503 if librato is unavailable" do
             Umpire::LibratoMetrics.should_receive(:get_values_for_range) { raise MetricServiceRequestFailed, "it broke" }
-            get "/check?metric=foo.bar&range=60&min=100&backend=librato"
+            get "/check?metric=foo.bar&range=60&min=100&backend=librato", {}, request_headers
             last_response.status.should eq(503)
-            last_response.body.should eq({'error' => "connecting to backend metrics service failed with error 'request timed out'"}.to_json + "\n")
+            last_response.body.should eq({'error' => "connecting to backend metrics service failed with error 'request timed out'", 'request_id' => request_id}.to_json + "\n")
           end
         end
 
