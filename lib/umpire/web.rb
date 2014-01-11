@@ -190,7 +190,7 @@ module Umpire
       e = env["sinatra.error"]
       log(at: "internal_error", "class" => e.class, message: e.message)
       status 500
-      JSON.dump({"error" => "internal server error"}) + "\n"
+      JSON.dump({"error" => "internal server error", "request_id" => request_id}) + "\n"
     end
 
     def self.start
