@@ -2,6 +2,7 @@ require "puma"
 require "sinatra/base"
 require 'rack/ssl'
 require 'rack-timeout'
+require 'securerandom'
 
 require "umpire"
 
@@ -26,6 +27,7 @@ module Umpire
     after do
       Thread.current[:scope] = nil
       Thread.current[:request_id] = nil
+      Scrolls::Log.add_global_context(:request_id => nil)
     end
 
     helpers do
@@ -50,7 +52,8 @@ module Umpire
       end
 
       def grab_request_id
-        Thread.current[:request_id] = request.env["HTTP_HEROKU_REQUEST_ID"] || request.env["HTTP_X_REQUEST_ID"]
+        Thread.current[:request_id] = request.env["HTTP_HEROKU_REQUEST_ID"] || request.env["HTTP_X_REQUEST_ID"] || SecureRandom.hex(16)
+        Scrolls::Log.add_global_context(:request_id => Thread.current[:request_id])
       end
 
       def valid?(params)
