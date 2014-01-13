@@ -5,11 +5,10 @@ ruby "1.9.3"
 gem 'yajl-ruby'
 gem 'librato-metrics'
 gem 'sinatra'
-gem 'thin'
-gem 'instruments'
+gem 'puma'
 gem 'rack-timeout', git: "https://github.com/freeformz/rack-timeout.git"
 gem 'rack-ssl'
-gem 'rest-client'
+gem 'excon'
 gem 'scrolls'
 
 group :development do

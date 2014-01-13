@@ -6,10 +6,10 @@ module Umpire
 
     def get_values_for_range(graphite_url, metric, range)
       begin
-        json = RestClient.get(url(graphite_url, metric, range))
+        json = Excon.get(url(graphite_url, metric, range), :expects => [200]).body
         data = JSON.parse(json)
         data.empty? ? raise(MetricNotFound) : data.flat_map { |metric| metric["datapoints"] }.map(&:first).compact
-      rescue RestClient::RequestFailed => e
+      rescue Excon::Errors::Error => e
         raise MetricServiceRequestFailed, e.message
       end
     end

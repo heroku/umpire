@@ -1,15 +1,23 @@
-require "thin"
+require "puma"
 require "sinatra/base"
 require 'rack/ssl'
 require 'rack-timeout'
-require "instruments"
+require 'securerandom'
+
+require "umpire"
 
 module Umpire
   class Web < Sinatra::Base
     enable :dump_errors
     disable :show_exceptions
-    register Sinatra::Instrumentation
-    instrument_routes
+
+    use Rack::SSL if Config.force_https?
+    use Rack::Timeout unless test?
+    Rack::Timeout.timeout = 29
+
+    configure do
+      set :server, :puma
+    end
 
     before do
       content_type :json
@@ -19,6 +27,7 @@ module Umpire
     after do
       Thread.current[:scope] = nil
       Thread.current[:request_id] = nil
+      Umpire::Log.add_global_context(:request_id => nil)
     end
 
     helpers do
@@ -42,8 +51,13 @@ module Umpire
         end
       end
 
+      def request_id
+        Thread.current[:request_id]
+      end
+
       def grab_request_id
-        Thread.current[:request_id] = request.env["HTTP_HEROKU_REQUEST_ID"] || request.env["HTTP_X_REQUEST_ID"]
+        Thread.current[:request_id] = request.env["HTTP_HEROKU_REQUEST_ID"] || request.env["HTTP_X_REQUEST_ID"] || SecureRandom.hex(16)
+        Umpire::Log.add_global_context(:request_id => Thread.current[:request_id])
       end
 
       def valid?(params)
@@ -117,7 +131,7 @@ module Umpire
       param_errors = valid?(params)
       unless param_errors.empty?
         log(action: "check", at: "invalid_params")
-        halt 400, JSON.dump({"error" => param_errors.join(", ")}) + "\n"
+        halt 400, JSON.dump({"error" => param_errors.join(", "), "request_id" => request_id}) + "\n"
       end
 
       min = (params["min"] && params["min"].to_f)
@@ -127,46 +141,48 @@ module Umpire
 
       aggregator = create_aggregator(params["aggregate"])
 
-      begin
-        points = fetch_points(params)
-        if points.empty?
-          if empty_ok
-            log(action: "check", metric: params["metric"], source: params["source"], at: "no_points_empty_ok")
+      Umpire::Log.context(action: "check", metric: params["metric"], source: params["source"]) do
+        begin
+          points = fetch_points(params)
+          if points.empty?
+            if empty_ok
+              log(at: "no_points_empty_ok")
+            else
+              status 404
+              log(at: "no_points")
+            end
+            JSON.dump({"error" => "no values for metric in range", "request_id" => request_id}) + "\n"
           else
-            status 404
-            log(action: "check", metric: params["metric"], source: params["source"], at: "no_points")
+            value = aggregator.aggregate(points)
+            if ((min && (value < min)) || (max && (value > max)))
+              log(at: "out_of_range", min: min, max: max, value: value, num_points: points.count)
+              status 500
+            else
+              log(at: "ok", min: min, max: max, value: value, num_points: points.count)
+              status 200
+            end
+            JSON.dump({"value" => value, "min" => min, "max" => max, "num_points" => points.count, "request_id" => request_id}) + "\n"
           end
-          JSON.dump({"error" => "no values for metric in range"}) + "\n"
-        else
-          value = aggregator.aggregate(points)
-          if ((min && (value < min)) || (max && (value > max)))
-            log(action: "check", at: "out_of_range", metric: params["metric"], source: params["source"], min: min, max: max, value: value, num_points: points.count)
-            status 500
-          else
-            log(action: "check", at: "ok", metric: params["metric"], source: params["source"], min: min, max: max, value: value, num_points: points.count)
-            status 200
-          end
-          JSON.dump({"value" => value, "min" => min, "max" => max, "num_points" => points.count}) + "\n"
+        rescue MetricNotComposite => e
+          log(at: "metric_not_composite", error: e.message)
+          halt 400, JSON.dump("error" => e.message, "request_id" => request_id) + "\n"
+        rescue MetricNotFound
+          log(at: "metric_not_found")
+          halt 404, JSON.dump({"error" => "metric not found", "request_id" => request_id}) + "\n"
+        rescue MetricServiceRequestFailed => e
+          log(at: "metric_service_request_failed", message: e.message)
+          halt 503, JSON.dump({"error" => "connecting to backend metrics service failed with error 'request timed out'", "request_id" => request_id}) + "\n"
         end
-      rescue MetricNotComposite => e
-        log(action: "check", at: "metric_not_composite", metric: params["metric"], source: params["source"], error: e.message)
-        halt 400, JSON.dump("error" => e.message) + "\n"
-      rescue MetricNotFound
-        log(action: "check", at: "metric_not_found", source: params["source"], metric: params["metric"])
-        halt 404, JSON.dump({"error" => "metric not found"}) + "\n"
-      rescue MetricServiceRequestFailed => e
-        log(action: "check", at: "metric_service_request_failed", metric: params["metric"], source: params["source"], message: e.message)
-        halt 503, JSON.dump({"error" => "connecting to backend metrics service failed with error 'request timed out'"}) + "\n"
       end
     end
 
     get "/health" do
-      log(at: "health")
+      log(action: "health")
       JSON.dump({"health" => "ok"}) + "\n"
     end
 
     get "/*" do
-      log(at: "not_found")
+      log(action: "not_found")
       halt 404, JSON.dump({"error" => "not found"}) + "\n"
     end
 
@@ -174,34 +190,20 @@ module Umpire
       e = env["sinatra.error"]
       log(at: "internal_error", "class" => e.class, message: e.message)
       status 500
-      JSON.dump({"error" => "internal server error"}) + "\n"
+      JSON.dump({"error" => "internal server error", "request_id" => request_id}) + "\n"
     end
 
     def self.start
-      log(fn: "start", at: "build")
-      @server = Thin::Server.new("0.0.0.0", Config.port) do
-
-        if Config.force_https?
-          use Rack::SSL
-        end
-
-        use Rack::Timeout
-        Rack::Timeout.timeout = 29
-
-        run Web.new
-      end
-
       log(fn: "start", at: "install_trap")
       Signal.trap("TERM") do
         log(fn: "trap")
-        @server.stop!
+        stop!
         log(fn: "trap", at: "exit", status: 0)
         Kernel.exit!(0)
       end
 
-      @server.start
-
-      log(fn: "start", at: run, port: Config.port)
+      log(fn: "start", at: "run_server")
+      run!
     end
 
     def self.log(data, &blk)
@@ -210,5 +212,3 @@ module Umpire
     end
   end
 end
-
-Instruments.defaults = {logger: Umpire::Web, method: :log}
