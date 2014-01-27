@@ -95,10 +95,11 @@ describe Umpire::Web do
       end
 
       it "should return a 503 if graphite is unavailable" do
-        Umpire::Graphite.stub(:get_values_for_range) { raise MetricServiceRequestFailed, "it broke" }
+        message = "it broke"
+        Umpire::Graphite.stub(:get_values_for_range) { raise MetricServiceRequestFailed, message }
         get "/check?metric=foo.bar&range=60&min=100", {}, request_headers
         last_response.status.should eq(503)
-        last_response.body.should eq({'error' => "connecting to backend metrics service failed with error 'request timed out'", 'request_id' => request_id}.to_json + "\n")
+        last_response.body.should eq({'error' => "connecting to backend metrics service failed with error '#{message}'", 'request_id' => request_id}.to_json + "\n")
       end
 
       it "should return a 200 if the data is within range" do
@@ -172,10 +173,11 @@ describe Umpire::Web do
           end
 
           it "should return a 503 if librato is unavailable" do
-            Umpire::LibratoMetrics.should_receive(:get_values_for_range) { raise MetricServiceRequestFailed, "it broke" }
+            message = 'it broke'
+            Umpire::LibratoMetrics.should_receive(:get_values_for_range) { raise MetricServiceRequestFailed, message }
             get "/check?metric=foo.bar&range=60&min=100&backend=librato", {}, request_headers
             last_response.status.should eq(503)
-            last_response.body.should eq({'error' => "connecting to backend metrics service failed with error 'request timed out'", 'request_id' => request_id}.to_json + "\n")
+            last_response.body.should eq({'error' => "connecting to backend metrics service failed with error '#{message}'", 'request_id' => request_id}.to_json + "\n")
           end
         end
 
