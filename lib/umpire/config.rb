@@ -1,7 +1,13 @@
 ENV["TZ"] = "UTC"
 
+require 'excon'
+if ENV["SSL_VERIFY_PEER"]  == "false"
+  Excon.defaults[:ssl_verify_peer] = false
+end
+
 module Umpire
   module Config
+
     def self.env!(k)
       ENV[k] || raise("missing key #{k}")
     end
