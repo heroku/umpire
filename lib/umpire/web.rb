@@ -141,7 +141,9 @@ module Umpire
 
       aggregator = create_aggregator(params["aggregate"])
 
-      Umpire::Log.context(action: "check", metric: params["metric"], source: params["source"]) do
+      backend = params["backend"] || "graphite"
+
+      Umpire::Log.context(action: "check", metric: params["metric"], backend: backend, source: params["source"]) do
         begin
           points = fetch_points(params)
           if points.empty?
