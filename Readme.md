@@ -89,6 +89,12 @@ $ export UMPIRE_URL=https://umpire:$API_KEY@umpire-$DEPLOY.herokuapp.com
 $ curl -i "$UMPIRE_URL/check?metric=pulse.nginx-requests-per-second&max=400&range=300"
 ```
 
+## Testing
+
+```bash
+$ bundle install
+$ bundle exec rake
+```
 
 ## Health
 
