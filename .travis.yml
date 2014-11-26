@@ -1,0 +1,13 @@
+language: ruby
+cache: bundler
+rvm:
+- 1.9.3
+notifications:
+  email: false
+  hipchat:
+    rooms:
+      secure: kfacz0LmKTqL9O88NqI41QIbKgyEQsrUEXa+dJpCDJhhTOstT4IYVLXu8YwBtuOWV6dyWPfypHrQwhfmjS8apzXttQt11Ate7J71xu7bcXaLkGbpHlwx93qHirEKWpfLdf0aDIbLPhX/C2VmW0ykyhvHvKnKlhi3+OEmKzRK3r0=
+    template:
+    - '%{repository}#%{build_number} (%{branch} - %{commit} : %{author}): %{message}
+      (<a href="%{build_url}">Details</a> | <a href="%{compare_url}">Change view</a>)'
+    format: html
