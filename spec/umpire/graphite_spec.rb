@@ -43,6 +43,19 @@ describe Umpire::Graphite do
     end
   end
 
+  describe "headers" do
+    it 'should return nil when the config values are not set' do
+      Umpire::Graphite.headers.should eq({})
+    end
+
+    it 'should return headers with the config values are set' do
+      ENV['BASIC_AUTH_USERNAME'] = 'test'
+      ENV['BASIC_AUTH_PASSWORD'] = 'test'
+
+      Umpire::Graphite.headers['Authorization'].should_not be_nil
+    end
+  end
+
   describe "url" do
     context "with encodable characters" do
       it "should return a properly url encoded url" do

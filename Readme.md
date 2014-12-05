@@ -33,6 +33,16 @@ The default metrics target is Graphite.  If you'd like to check [Librato Metrics
 $ curl -i "$UMPIRE_URL/check?metric=custom.api.production.requests.per-sec&min=40&range=60&backend=librato"
 ```
 
+## HTTP basic auth support (for Graphite only)
+
+If your Graphite server is protected by HTTP basic auth you can provide those
+details by supplying a couple of configuration options.
+
+```bash
+$ heroku config:add -r $DEPLOY BASIC_AUTH_USERNAME=your_username
+$ heroku config:add -r $DEPLOY BASIC_AUTH_PASSWORD=your_password
+```
+
 ## Librato Support
 
 Librato returns multiple values from their API for a given metric. These include: count, min, max, sum, value (aka mean) and a few others. In addition librato allows you to optionally provide a statistical function used to generate an aggregated time series across sources by providing a `group_by` param.
