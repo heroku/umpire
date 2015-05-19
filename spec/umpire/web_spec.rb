@@ -146,8 +146,8 @@ describe Umpire::Web do
 
           it "should accept sum as a compose function" do
             Umpire::LibratoMetrics.should_receive(:compose_values_for_range).
-              with("sum", ["foo.bar", "bar.foo"], 60, {}) { [10] }
-            get "/check?metric=foo.bar,bar.foo&range=60&min=10&backend=librato&compose=sum"
+              with("sum", ["foo.bar", "bar.foo", "foo.baz"], 60, {}) { [10] }
+            get "/check?metric=foo.bar,bar.foo,foo.baz&range=60&min=10&backend=librato&compose=sum"
             last_response.should be_ok
           end
 
