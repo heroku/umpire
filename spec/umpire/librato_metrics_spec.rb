@@ -78,6 +78,12 @@ describe Umpire::LibratoMetrics do
       end.to raise_error(MetricNotComposite)
     end
 
+    it "composes 4 metrics at most for sum" do
+      expect do
+        Umpire::LibratoMetrics.compose_values_for_range("sum", ["foo", "bar", "baz", "foobar", "foobaz"], 60)
+      end.to raise_error(MetricNotComposite)
+    end
+
     %w'divide multiply'.each do |function|
       it "expects at least two metrics for #{function}" do
         expect do
