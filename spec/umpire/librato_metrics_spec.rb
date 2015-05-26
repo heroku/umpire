@@ -84,6 +84,24 @@ describe Umpire::LibratoMetrics do
       end.to raise_error(MetricNotComposite)
     end
 
+    it "supports the subtract function" do
+      data1 = { "all" => [ {"value" => 3}, {"value" => 100}, {"value" => 200} ] }
+      data2 = { "all" => [ {"value" => 1}, {"value" => 40}, {"value" => 80} ] }
+      client_double.should_receive(:fetch).with('foo', summarize_sources: true, breakout_sources: false, start_time: Time.now.to_i - 60) { data1 }
+      client_double.should_receive(:fetch).with('bar', summarize_sources: true, breakout_sources: false, start_time: Time.now.to_i - 60) { data2 }
+      Umpire::LibratoMetrics.compose_values_for_range("subtract", ["foo", "bar"], 60).
+        should eq([2, 60, 120])
+    end
+
+    it "supports the subtract function with empty values" do
+      data1 = { "all" => [ {"value" => 1}, {"value" => 10}, {"value" => 30} ] }
+      data2 = { "all" => [ ] }
+      client_double.should_receive(:fetch).with('foo', summarize_sources: true, breakout_sources: false, start_time: Time.now.to_i - 60) { data1 }
+      client_double.should_receive(:fetch).with('bar', summarize_sources: true, breakout_sources: false, start_time: Time.now.to_i - 60) { data2 }
+      Umpire::LibratoMetrics.compose_values_for_range("subtract", ["foo", "bar"], 60).
+        should eq([1, 10, 30])
+    end
+
     it "supports the sum function" do
       data1 = { "all" => [ {"value" => 1}, {"value" => 10}, {"value" => 30} ] }
       data2 = { "all" => [ {"value" => 2}, {"value" => 20}, {"value" => 40} ] }

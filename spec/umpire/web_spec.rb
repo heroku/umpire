@@ -144,6 +144,13 @@ describe Umpire::Web do
             last_response.status.should eq(400)
           end
 
+          it "should accept subtract as a compose function" do
+            Umpire::LibratoMetrics.should_receive(:compose_values_for_range).
+              with("subtract", ["foo.bar", "bar.foo"], 60, {}) { [10] }
+            get "/check?metric=foo.bar,bar.foo&range=60&min=10&backend=librato&compose=subtract"
+            last_response.should be_ok
+          end
+
           it "should accept sum as a compose function" do
             Umpire::LibratoMetrics.should_receive(:compose_values_for_range).
               with("sum", ["foo.bar", "bar.foo"], 60, {}) { [10] }
