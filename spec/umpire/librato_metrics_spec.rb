@@ -78,19 +78,29 @@ describe Umpire::LibratoMetrics do
       end.to raise_error(MetricNotComposite)
     end
 
-    it "expects at least two metrics" do
+    it "composes 4 metrics at most for sum" do
       expect do
-        Umpire::LibratoMetrics.compose_values_for_range("divide", ["foo.bar"], 60)
+        Umpire::LibratoMetrics.compose_values_for_range("sum", ["foo", "bar", "baz", "foobar", "foobaz"], 60)
       end.to raise_error(MetricNotComposite)
+    end
+
+    %w'divide multiply'.each do |function|
+      it "expects at least two metrics for #{function}" do
+        expect do
+          Umpire::LibratoMetrics.compose_values_for_range(function, ["foo.bar"], 60)
+        end.to raise_error(MetricNotComposite)
+      end
     end
 
     it "supports the sum function" do
       data1 = { "all" => [ {"value" => 1}, {"value" => 10}, {"value" => 30} ] }
       data2 = { "all" => [ {"value" => 2}, {"value" => 20}, {"value" => 40} ] }
+      data3 = { "all" => [ {"value" => 3}, {"value" => 30}, {"value" => 50} ] }
       client_double.should_receive(:fetch).with('foo', summarize_sources: true, breakout_sources: false, start_time: Time.now.to_i - 60) { data1 }
       client_double.should_receive(:fetch).with('bar', summarize_sources: true, breakout_sources: false, start_time: Time.now.to_i - 60) { data2 }
-      Umpire::LibratoMetrics.compose_values_for_range("sum", ["foo", "bar"], 60).
-        should eq([3, 30, 70])
+      client_double.should_receive(:fetch).with('buzz', summarize_sources: true, breakout_sources: false, start_time: Time.now.to_i - 60) { data3 }
+      Umpire::LibratoMetrics.compose_values_for_range("sum", ["foo", "bar","buzz"], 60).
+        should eq([6, 60, 120])
     end
 
     it "supports the sum function with empty values" do
