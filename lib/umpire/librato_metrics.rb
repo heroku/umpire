@@ -110,6 +110,8 @@ module CompositeMetric
       Division
     when "multiply"
       Multiplication
+    when "subtract"
+      Subtract
     else
       raise MetricNotComposite, "invalid compose function: #{function}"
     end
@@ -146,5 +148,14 @@ module CompositeMetric
     end
   end
 
+  class Subtract
+    attr_reader :value
+
+    def initialize(*values)
+      @value = values[0].zip(values[1]).map do |items|
+        items.inject { |diff, i| diff -= i.to_f }
+      end
+    end
+  end
 end
 
