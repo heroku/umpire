@@ -1,0 +1,12 @@
+web:
+  build: .
+  command: bash
+  working_dir: /app/user
+  volumes:
+    - '.:/app/user'
+  ports:
+    - '5000:5000'
+
+  # prevent heroku/ruby from clobber existing bundled gems
+  # comment this out to use 'docker-compose up'
+  entrypoint: ["bash", "-c"]
