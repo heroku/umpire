@@ -46,10 +46,10 @@ $ curl -i "$UMPIRE_URL/check?metric=active-connections:count:sum&backend=librato
 
 For more info look [here](http://dev.librato.com/v1/get/metrics/:name)
 
-Pass ```emtpy_ok=true``` to have umpire respond with a 200 if the metrics return with no value within a given range. 
+Pass ```emtpy_ok=true``` to have umpire respond with a 200 if the metrics return with no value within a given range.
 
 ## Aggregation
-The default metric values aggregation method is averaging, but you can change it by adding an 'aggregate' query param. Possible aggregation methods are `avg`, `sum`, `max` and `min`. 
+The default metric values aggregation method is averaging, but you can change it by adding an 'aggregate' query param. Possible aggregation methods are `avg`, `sum`, `max` and `min`.
 
 Following query responds with 200 if the `custom.api.production.requests.per-sec` metric has had a maximum value of less than 400 over the last minute:
 
@@ -57,7 +57,7 @@ Following query responds with 200 if the `custom.api.production.requests.per-sec
 $ curl -i "$UMPIRE_URL/check?metric=custom.api.production.requests.per-sec&max=400&range=60&aggregate=max"
 ```
 
-Following query responds with a 200 if the count of `api.prod.addons.plan-changes.errors` metrics has a maximum value of 10 over the last five minutes.  
+Following query responds with a 200 if the count of `api.prod.addons.plan-changes.errors` metrics has a maximum value of 10 over the last five minutes.
 
 ```bash
 $ curl -i curl -i "$UMPIRE_URL/check?metric=api.prod.addons.plan-changes.errors:count&aggregate=sum&max=10&range=300&backend=librato&empty_ok=true"
@@ -78,6 +78,14 @@ $ export UMPIRE_URL=http://umpire:secret@127.0.0.1:5000
 $ curl -i "$UMPIRE_URL/check?metric=pulse.nginx-requests-per-second&max=400&range=300"
 ```
 
+#### Local Docker
+
+```bash
+$ docker-compose build
+$ docker-compose run --rm web bash
+docker$ bundle install --path .
+docker$ bundle exec rake
+```
 
 ## Platform Deploy
 

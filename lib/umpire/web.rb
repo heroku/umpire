@@ -143,7 +143,7 @@ module Umpire
 
       backend = params["backend"] || "graphite"
 
-      Umpire::Log.context(action: "check", metric: params["metric"], backend: backend, source: params["source"]) do
+      Umpire::Log.context(action: "check", metric: params["metric"], backend: backend, librato_source: params["source"]) do
         begin
           points = fetch_points(params)
           if points.empty?
