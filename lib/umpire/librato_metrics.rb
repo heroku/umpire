@@ -67,7 +67,11 @@ module Umpire
         Log.log({debug: "librato results"}.merge(results))
       end
 
-      if all = results['all']
+      # This is the response you get if you try to request
+      # a handmade composite metric.
+      if all = results.kind_of?(Array) && results.size > 0 && results[0]['series']
+        all.map { |h| h[from] }
+      elsif all = results['all']
         all.map { |h| h[from] }
       else
         []
