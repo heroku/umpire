@@ -13,7 +13,7 @@ GEM
       aggregate (~> 0.2.2)
       faraday (~> 0.7)
       multi_json
-    multi_json (1.8.4)
+    multi_json (1.12.1)
     multipart-post (1.2.0)
     puma (2.7.1)
       rack (>= 1.1, < 2.0)
@@ -26,6 +26,8 @@ GEM
       rack (>= 1.0)
     rack-timeout (0.3.2)
     rake (10.1.1)
+    rollbar (2.13.3)
+      multi_json
     rspec (2.14.1)
       rspec-core (~> 2.14.0)
       rspec-expectations (~> 2.14.0)
@@ -57,11 +59,15 @@ DEPENDENCIES
   rack-test
   rack-timeout
   rake
+  rollbar
   rspec
   scrolls
   sinatra
   webmock
   yajl-ruby
 
+RUBY VERSION
+   ruby 1.9.3p551
+
 BUNDLED WITH
-   1.11.2
+   1.12.5

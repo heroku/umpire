@@ -10,6 +10,7 @@ gem 'rack-timeout'
 gem 'rack-ssl'
 gem 'excon'
 gem 'scrolls'
+gem 'rollbar'
 
 group :development do
   gem 'rack-test'
