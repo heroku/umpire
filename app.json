@@ -1,0 +1,41 @@
+{
+  "name": "umpire",
+  "scripts": {},
+  "env": {
+    "API_KEY": {
+      "required": true
+    },
+    "API_KEY_NAMED": {
+      "required": true
+    },
+    "APP": {
+      "required": true
+    },
+    "DEPLOY": {
+      "required": true
+    },
+    "FORCE_HTTPS": {
+      "required": true
+    },
+    "LIBRATO_EMAIL": {
+      "required": true
+    },
+    "LIBRATO_KEY": {
+      "required": true
+    },
+    "ROLLBAR_ACCESS_TOKEN": {
+      "required": true
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1
+    }
+  },
+  "addons": [],
+  "buildpacks": [
+    {
+      "url": "heroku/ruby"
+    }
+  ]
+}
