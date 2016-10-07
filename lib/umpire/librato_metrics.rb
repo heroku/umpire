@@ -71,7 +71,7 @@ module Umpire
       # a handmade composite metric.
       if all = results.kind_of?(Array) && results.size > 0 && results[0]['series']
         all.map { |h| h[from] }
-      elsif all = results['all']
+      elsif all = results.kind_of?(Hash) && results['all']
         all.map { |h| h[from] }
       else
         []
