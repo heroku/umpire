@@ -26,6 +26,11 @@ describe Umpire::LibratoMetrics do
       Umpire::LibratoMetrics.get_values_for_range('foo', 60).should eq([])
     end
 
+    it "handles empty data approprately" do
+      client_double.should_receive(:fetch).with('foo', summarize_sources: true, breakout_sources: false, start_time: Time.now.to_i - 60) { [] }
+      Umpire::LibratoMetrics.get_values_for_range('foo', 60).should eq([])
+    end
+
     it "uses sum_means data when asked" do
       data = { "all" => [
         {"value" => 1, "sum_means" => 10},
