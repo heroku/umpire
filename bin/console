@@ -2,6 +2,6 @@
 
 $:.unshift(File.expand_path(File.join(File.dirname($0), "../lib")))
 require "umpire/log"
-require "irb"
+require "pry"
 
-IRB.start
+Pry.start

@@ -1,8 +1,3 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env bash
 
-$:.unshift(File.expand_path(File.join(File.dirname($0), "../lib")))
-require "umpire"
-require "umpire/log"
-require "umpire/web"
-
-Umpire::Web.start
+bundle exec puma --config config/puma.rb config.ru
