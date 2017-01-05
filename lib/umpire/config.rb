@@ -1,5 +1,6 @@
 ENV["TZ"] = "UTC"
 
+require 'pry'
 require 'excon'
 if ENV["SSL_VERIFY_PEER"]  == "false"
   Excon.defaults[:ssl_verify_peer] = false
@@ -31,7 +32,7 @@ module Umpire
       env = ENV.find { |k, v| k =~ /\AAPI_KEY/ && v == value }
       return if env.nil?
 
-      matches = env[0].match /\A(?:API_KEY?)(_[A-Z]+)?(_DEPRECATED)?\z/
+      matches = env[0].match(/\A(?:API_KEY?)(_[A-Z]+)?(_DEPRECATED)?\z/)
       name    = matches.captures.compact
 
       if name.empty? || name[0].include?("DEPRECATED")

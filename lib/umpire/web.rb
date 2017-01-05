@@ -1,10 +1,9 @@
-require "puma"
 require "sinatra/base"
 require 'rack/ssl'
 require 'rack-timeout'
 require 'securerandom'
-
 require "umpire"
+require 'rollbar'
 
 module Umpire
   class Web < Sinatra::Base
@@ -16,7 +15,15 @@ module Umpire
     Rack::Timeout.timeout = 29
 
     configure do
-      set :server, :puma
+      Signal.trap("TERM") do
+        stop!
+        Kernel.exit!(0)
+      end
+
+      Rollbar.configure do |config|
+        config.access_token = ENV['ROLLBAR_ACCESS_TOKEN']
+        config.environment  = ENV['DEPLOY']
+      end
     end
 
     before do
@@ -189,28 +196,19 @@ module Umpire
     end
 
     error do
-      e = env["sinatra.error"]
+      Rollbar.error(sinatra_err.message, class: sinatra_err.class, at: :internal_error, request_id: request_id)
       log(at: "internal_error", "class" => e.class, message: e.message)
       status 500
       JSON.dump({"error" => "internal server error", "request_id" => request_id}) + "\n"
     end
 
-    def self.start
-      log(fn: "start", at: "install_trap")
-      Signal.trap("TERM") do
-        log(fn: "trap")
-        stop!
-        log(fn: "trap", at: "exit", status: 0)
-        Kernel.exit!(0)
-      end
-
-      log(fn: "start", at: "run_server")
-      run!
-    end
-
     def self.log(data, &blk)
       data.delete(:level)
       Log.log({ns: "web", scope: Thread.current[:scope], request_id: Thread.current[:request_id]}.merge(data), &blk)
+    end
+
+    def sinatra_err
+      env["sinatra.error"]
     end
   end
 end
