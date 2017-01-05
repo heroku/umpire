@@ -66,7 +66,7 @@ $ curl -i curl -i "$UMPIRE_URL/check?metric=api.prod.addons.plan-changes.errors:
 ## Local Deploy
 
 ```bash
-$ rvm use 1.9.2
+$ rvm use 2.4.0
 $ bundle install
 $ export DEPLOY=dev
 $ export APP=umpire-$DEPLOY
@@ -98,6 +98,7 @@ $ heroku config:add -r $DEPLOY DEPLOY=$DEPLOY
 $ heroku config:add -r $DEPLOY FORCE_HTTPS=true
 $ heroku config:add -r $DEPLOY API_KEY=$API_KEY
 $ heroku config:add -r $DEPLOY GRAPHITE_URL=https://graphite.yourdomain.com
+$ heroku config:add -r $DEPLOY RUBYOPT="-W0" # silence deprication warnings from Sinatra w/ Ruby 2.4
 $ git push $DEPLOY master
 $ heroku scale -r $DEPLOY web=3
 $ export UMPIRE_URL=https://umpire:$API_KEY@umpire-$DEPLOY.herokuapp.com

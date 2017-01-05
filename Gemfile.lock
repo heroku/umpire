@@ -23,7 +23,7 @@ GEM
       slop (~> 3.4)
     puma (3.6.2)
     rack (1.6.5)
-    rack-protection (1.5.1)
+    rack-protection (1.5.3)
       rack
     rack-ssl (1.4.1)
       rack
@@ -43,16 +43,16 @@ GEM
     rspec-mocks (2.14.4)
     safe_yaml (0.9.7)
     scrolls (0.3.3)
-    sinatra (1.4.4)
-      rack (~> 1.4)
+    sinatra (1.4.7)
+      rack (~> 1.5)
       rack-protection (~> 1.4)
-      tilt (~> 1.3, >= 1.3.4)
+      tilt (>= 1.3, < 3)
     slop (3.6.0)
-    tilt (1.4.1)
+    tilt (2.0.5)
     webmock (1.16.1)
       addressable (>= 2.2.7)
       crack (>= 0.3.2)
-    yajl-ruby (1.2.0)
+    yajl-ruby (1.3.0)
 
 PLATFORMS
   ruby
@@ -69,9 +69,12 @@ DEPENDENCIES
   rollbar
   rspec
   scrolls
-  sinatra
+  sinatra (~> 1.4.4)
   webmock
   yajl-ruby
 
+RUBY VERSION
+   ruby 2.4.0p0
+
 BUNDLED WITH
-   1.12.5
+   1.13.7
