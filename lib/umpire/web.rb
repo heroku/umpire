@@ -196,7 +196,7 @@ module Umpire
 
     error do
       Rollbar.error(sinatra_err.message, class: sinatra_err.class, at: :internal_error, request_id: request_id)
-      log(at: "internal_error", "class" => e.class, message: e.message)
+      log(at: "internal_error", "class" => sinatra_err.class, message: sinatra_err.message)
       status 500
       JSON.dump({"error" => "internal server error", "request_id" => request_id}) + "\n"
     end
