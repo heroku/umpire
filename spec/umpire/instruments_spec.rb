@@ -38,7 +38,7 @@ describe Umpire::Instruments do
         case data[:name]
         when "excon.error"
           data.keys.sort.should eq([:name, :error_class, :error_message].sort)
-          data[:error_class].should eq("Excon::Errors::InternalServerError")
+          data[:error_class].should eq("Excon::Error::InternalServerError")
           data[:error_message].should match(/InternalServerError/)
         end
         blk.call

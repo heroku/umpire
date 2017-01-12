@@ -3,8 +3,8 @@ source "https://rubygems.org"
 ruby "2.4.0"
 
 gem 'yajl-ruby'
-gem 'librato-metrics', '~> 1.6.0'
-gem 'sinatra', '~> 1.4.4'
+gem 'librato-metrics'
+gem 'sinatra', '~> 1.4.7'
 gem 'puma'
 gem 'rack-timeout'
 gem 'rack-ssl'
