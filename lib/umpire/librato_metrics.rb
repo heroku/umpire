@@ -61,7 +61,7 @@ module Umpire
         Log.log(options.merge(range: range, metric: metric))
       end
 
-      results = client.fetch(metric, options)
+      results = client.get_measurements(metric, options)
 
       if Config.debug?
         Log.log({debug: "librato results"}.merge(results))
