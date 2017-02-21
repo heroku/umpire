@@ -3,12 +3,18 @@ require "scrolls"
 
 module Umpire
   module Log
+    BASE_DATA = {app: Config.app, deploy: Config.deploy}.freeze
+
     def self.log(data, &blk)
       if Config.deploy == "test"
         blk.call if blk
       else
-        Scrolls.log({app: Config.app, deploy: Config.deploy}.merge(data), &blk)
+        Scrolls.log(BASE_DATA.merge(data), &blk)
       end
+    end
+
+    def self.log_exception(ex, data = {})
+      Scrolls.log_exception(BASE_DATA.merge(data), ex)
     end
 
     def self.context(data, &blk)
