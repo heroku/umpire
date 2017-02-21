@@ -209,7 +209,7 @@ module Umpire
     end
 
     def self.base_log_data
-      { scope: Thread.current[:scope] }
+      { scope: Thread.current[:scope] }.freeze
     end
 
     def self.log(data, &blk)
