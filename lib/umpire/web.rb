@@ -7,7 +7,7 @@ require 'rollbar'
 
 module Umpire
   class Web < Sinatra::Base
-    enable :dump_errors
+    disable :dump_errors
     disable :show_exceptions
 
     use Rack::SSL if Config.force_https?
@@ -29,17 +29,24 @@ module Umpire
     before do
       content_type :json
       grab_request_id
+
+      Umpire::Log.add_global_context(ns: :web)
     end
 
     after do
       Thread.current[:scope] = nil
       Thread.current[:request_id] = nil
-      Umpire::Log.add_global_context(:request_id => nil)
+
+      Umpire::Log.add_global_context(request_id: nil)
     end
 
     helpers do
       def log(data, &blk)
         self.class.log(data, &blk)
+      end
+
+      def log_exception(ex, data = {})
+        self.class.log_exception(ex, data)
       end
 
       def protected!
@@ -196,15 +203,25 @@ module Umpire
     end
 
     error do
-      Rollbar.error(sinatra_err.message, class: sinatra_err.class, at: :internal_error, request_id: request_id)
-      log(at: "internal_error", "class" => sinatra_err.class, message: sinatra_err.message)
+      log_exception(sinatra_err)
       status 500
       JSON.dump({"error" => "internal server error", "request_id" => request_id}) + "\n"
     end
 
+    def self.base_log_data
+      { scope: Thread.current[:scope] }
+    end
+
     def self.log(data, &blk)
       data.delete(:level)
-      Log.log({ns: "web", scope: Thread.current[:scope], request_id: Thread.current[:request_id]}.merge(data), &blk)
+      Log.log(base_log_data.merge(data), &blk)
+    end
+
+    def self.log_exception(ex, data)
+      data.delete(:level)
+      data.merge!(base_log_data)
+      Rollbar.error(ex, data)
+      Log.log_exception(ex, data)
     end
 
     def sinatra_err
