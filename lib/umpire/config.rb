@@ -9,8 +9,14 @@ end
 module Umpire
   module Config
 
+    def self.env(k, raise_if_missing = false)
+      value = ENV[k]
+      raise("missing key #{k}") if value.nil? && raise_if_missing
+      value
+    end
+
     def self.env!(k)
-      ENV[k] || raise("missing key #{k}")
+      env(k, true)
     end
 
     def self.deploy; env!("DEPLOY"); end
@@ -19,6 +25,8 @@ module Umpire
     def self.api_key; env!("API_KEY"); end
     def self.librato_email; env!("LIBRATO_EMAIL"); end
     def self.librato_key; env!("LIBRATO_KEY"); end
+    def self.basic_auth_username; env("BASIC_AUTH_USERNAME"); end
+    def self.basic_auth_password; env("BASIC_AUTH_PASSWORD"); end
 
     def self.app
       ENV["APP"] || "umpire"
