@@ -1,8 +1,7 @@
-require "sinatra/base"
+require 'sinatra/base'
 require 'rack/ssl'
 require 'rack-timeout'
 require 'securerandom'
-require "umpire"
 require 'rollbar'
 
 module Umpire

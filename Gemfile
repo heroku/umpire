@@ -1,10 +1,10 @@
 source "https://rubygems.org"
 
-ruby "1.9.3"
+ruby "2.4.0"
 
 gem 'yajl-ruby'
-gem 'librato-metrics'
-gem 'sinatra'
+gem 'librato-metrics', '~> 1.6.0'
+gem 'sinatra', '~> 1.4.4'
 gem 'puma'
 gem 'rack-timeout'
 gem 'rack-ssl'

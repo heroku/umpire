@@ -1,5 +1,3 @@
-require 'umpire/log'
-
 module Umpire
   module Instruments
     class Api

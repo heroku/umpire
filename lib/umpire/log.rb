@@ -1,4 +1,3 @@
-require "umpire/config"
 require "scrolls"
 
 module Umpire

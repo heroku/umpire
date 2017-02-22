@@ -25,6 +25,10 @@
     },
     "ROLLBAR_ACCESS_TOKEN": {
       "required": true
+    },
+    "RUBYOPT": {
+      "description": "Silence deprication warnings.",
+      "value": "-W0"
     }
   },
   "formation": {

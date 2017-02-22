@@ -1,1 +1,1 @@
-FROM jmervine/herokudev-ruby:1.9.3
+FROM jmervine/herokudev-ruby:2.4.0

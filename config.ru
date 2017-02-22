@@ -1,7 +1,4 @@
-$:.unshift(File.expand_path(File.join(File.dirname($0), "../lib")))
-require "umpire"
-require "umpire/log"
-require "umpire/web"
+require_relative 'lib/umpire'
 require 'rack/ssl'
 require 'rack-timeout'
 
