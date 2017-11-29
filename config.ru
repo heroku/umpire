@@ -1,4 +1,4 @@
-$:.unshift(File.expand_path(File.join(File.dirname($0), "../lib")))
+$:.unshift(File.expand_path(File.join(File.dirname(__FILE__), "lib")))
 require "umpire"
 require "umpire/log"
 require "umpire/web"
