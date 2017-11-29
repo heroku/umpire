@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-ruby "1.9.3"
+ruby "2.4.2"
 
 gem 'yajl-ruby'
 gem 'librato-metrics'

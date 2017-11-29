@@ -1,5 +1,5 @@
 web:
-  build: .
+  image: jmervine/herokudev-ruby:2.4.2
   command: bash
   working_dir: /app/user
   volumes:
