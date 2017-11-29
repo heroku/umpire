@@ -148,6 +148,8 @@ module Umpire
         halt 400, JSON.dump({"error" => param_errors.join(", "), "request_id" => request_id}) + "\n"
       end
 
+      params["metric"] = params["metric"].strip if params["metric"]
+
       min = (params["min"] && params["min"].to_f)
       max = (params["max"] && params["max"].to_f)
 
