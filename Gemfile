@@ -9,7 +9,7 @@ gem 'puma'
 gem 'rack-timeout'
 gem 'rack-ssl'
 gem 'excon'
-gem 'scrolls', '~> 0.3.3'
+gem 'scrolls', '=0.3.3'
 gem 'rollbar'
 gem 'pry'
 
