@@ -1,15 +1,15 @@
 source "https://rubygems.org"
 
-ruby "1.9.3"
+ruby "2.4.2"
 
 gem 'yajl-ruby'
-gem 'librato-metrics'
+gem 'librato-metrics', '~> 1.3.0'
 gem 'sinatra'
 gem 'puma'
 gem 'rack-timeout'
 gem 'rack-ssl'
 gem 'excon'
-gem 'scrolls'
+gem 'scrolls', '~> 0.3.3'
 gem 'rollbar'
 gem 'pry'
 

@@ -1,11 +1,12 @@
 web:
-  build: .
+  image: jmervine/herokudev-ruby:2.4.2
   command: bash
   working_dir: /app/user
   volumes:
     - '.:/app/user'
   ports:
     - '5000:5000'
+  env_file: .env
 
   # prevent heroku/ruby from clobber existing bundled gems
   # comment this out to use 'docker-compose up'
