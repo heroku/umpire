@@ -9,10 +9,10 @@ Umpire provides a normalized HTTP endpoint that responds with 200 / non-200 acco
 
 ## Usage Examples
 
-Grab an `UMPIRE_URL` that you can use to query against:
+To curl against `production`, grab an `UMPIRE_URL` that you can use to query against:
 
 ```bash
-$ export UMPIRE_URL=https://u:$(heroku config:get API_KEY -a umpire-production)@umpire.yourdomain.com
+$ export UMPIRE_URL=https://u:$(heroku config:get API_KEY -a umpire-api-va-prod)@umpire-api-va-prod.herokai.com
 ```
 
 To respond with 200 if the `pulse.nginx-requests-per-second` metric has had an average value of less than 400 over the last 300 seconds:
@@ -47,6 +47,8 @@ $ curl -i "$UMPIRE_URL/check?metric=active-connections:count:sum&backend=librato
 For more info look [here](http://dev.librato.com/v1/get/metrics/:name)
 
 Pass ```emtpy_ok=true``` to have umpire respond with a 200 if the metrics return with no value within a given range.
+
+*Keep in mind that the default metrics target is Graphite; you must include `&backend=librato` to fetch a Librato metric.*
 
 ## Aggregation
 The default metric values aggregation method is averaging, but you can change it by adding an 'aggregate' query param. Possible aggregation methods are `avg`, `sum`, `max` and `min`.
@@ -100,7 +102,7 @@ $ heroku config:add -r $DEPLOY API_KEY=$API_KEY
 $ heroku config:add -r $DEPLOY GRAPHITE_URL=https://graphite.yourdomain.com
 $ git push $DEPLOY master
 $ heroku scale -r $DEPLOY web=3
-$ export UMPIRE_URL=https://umpire:$API_KEY@umpire-$DEPLOY.herokuapp.com
+$ export UMPIRE_URL=https://umpire:$API_KEY@umpire-api-$DEPLOY.herokai.com
 $ curl -i "$UMPIRE_URL/check?metric=pulse.nginx-requests-per-second&max=400&range=300"
 ```
 
