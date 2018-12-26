@@ -1,6 +1,23 @@
 {
   "name": "umpire",
   "scripts": {},
+  "environments": {
+    "test": {
+      "scripts": {
+        "test": "bundle exec rake"
+      },
+      "env": {
+        "APP": "umpire-test",
+        "DEPLOY": "test",
+        "API_KEY": "test-key",
+        "FORCE_HTTPS": "false",
+        "LIBRATO_KEY": "test-key",
+        "LIBRATO_EMAIL": "test@example.com",
+        "API_KEY_NAMED": "test-key",
+        "ROLLBAR_ACCESS_TOKEN": "test-token"
+      }
+    }
+  },
   "env": {
     "API_KEY": {
       "required": true

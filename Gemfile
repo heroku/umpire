@@ -13,7 +13,7 @@ gem 'scrolls', '=0.3.3'
 gem 'rollbar'
 gem 'pry'
 
-group :development do
+group :development, :test do
   gem 'rack-test'
   gem 'rake'
   gem 'rspec'
