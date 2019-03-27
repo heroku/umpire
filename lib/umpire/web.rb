@@ -164,6 +164,7 @@ module Umpire
           points = fetch_points(params)
           if points.empty?
             if empty_ok
+              status 200
               log(at: "no_points_empty_ok")
             else
               status 404
