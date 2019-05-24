@@ -1,4 +1,4 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe Umpire::Graphite do
   let(:graphite_url) { "https://graphite.example.com" }
@@ -8,12 +8,12 @@ describe Umpire::Graphite do
   describe "get_values_for_range" do
     let(:stub_request_with_values) do
       stub_request(:get, "#{graphite_url}/render/?format=json&from=-#{range}s&target=#{metric}")
-        .to_return(:body => [{"target"=>metric, "datapoints"=>[[4.47, 1348851060]]}].to_json)
+        .to_return(body: [{"target" => metric, "datapoints" => [[4.47, 1348851060]]}].to_json)
     end
 
     let(:stub_request_without_values) do
       stub_request(:get, "#{graphite_url}/render/?format=json&from=-#{range}s&target=#{metric}")
-        .to_return(:body => [].to_json)
+        .to_return(body: [].to_json)
     end
 
     it "should return an Array" do

@@ -1,9 +1,9 @@
 require "sinatra/base"
-require 'rack/ssl'
-require 'rack-timeout'
-require 'securerandom'
+require "rack/ssl"
+require "rack-timeout"
+require "securerandom"
 require "umpire"
-require 'rollbar'
+require "rollbar"
 
 module Umpire
   class Web < Sinatra::Base
@@ -21,8 +21,8 @@ module Umpire
       end
 
       Rollbar.configure do |config|
-        config.access_token = ENV['ROLLBAR_ACCESS_TOKEN']
-        config.environment  = ENV['DEPLOY']
+        config.access_token = ENV["ROLLBAR_ACCESS_TOKEN"]
+        config.environment  = ENV["DEPLOY"]
       end
     end
 
@@ -57,9 +57,9 @@ module Umpire
       end
 
       def authorized?
-        @auth ||=  Rack::Auth::Basic::Request.new(request.env)
+        @auth ||= Rack::Auth::Basic::Request.new(request.env)
         if @auth.provided? && @auth.basic? && @auth.credentials
-          if Thread.current[:scope] = Config.find_scope_by_key(@auth.credentials[1])
+          if (Thread.current[:scope] = Config.find_scope_by_key(@auth.credentials[1]))
             true
           end
         end
@@ -71,15 +71,15 @@ module Umpire
 
       def grab_request_id
         Thread.current[:request_id] = request.env["HTTP_HEROKU_REQUEST_ID"] || request.env["HTTP_X_REQUEST_ID"] || SecureRandom.hex(16)
-        Umpire::Log.add_global_context(:request_id => Thread.current[:request_id])
+        Umpire::Log.add_global_context(request_id: Thread.current[:request_id])
       end
 
       def valid?(params)
         errors = []
-        if !params["metric"]
+        unless params["metric"]
           errors.push("metric is required")
         end
-        if !params["range"]
+        unless params["range"]
           errors.push("range is required")
         end
         if !params["min"] && !params["max"]
@@ -97,14 +97,14 @@ module Umpire
 
       def fetch_points(params)
         metric = params["metric"]
-        range = (params["range"] && params["range"].to_i)
+        range = (params["range"]&.to_i)
 
         if use_librato_backend?
           compose = params["compose"]
 
           opts = {}
-          %w{source from resolution}.each do |key|
-            next unless val = params[key]
+          %w[source from resolution].each do |key|
+            next unless (val = params[key])
             opts[key.to_sym] = val
           end
 
@@ -120,7 +120,6 @@ module Umpire
         else
           Graphite.get_values_for_range(Config.graphite_url, metric, range)
         end
-
       end
 
       def create_aggregator(aggregation_method)
@@ -150,8 +149,8 @@ module Umpire
 
       params["metric"] = params["metric"].strip if params["metric"]
 
-      min = (params["min"] && params["min"].to_f)
-      max = (params["max"] && params["max"].to_f)
+      min = (params["min"]&.to_f)
+      max = (params["max"]&.to_f)
 
       empty_ok = !!params["empty_ok"]
 
@@ -172,7 +171,7 @@ module Umpire
             JSON.dump({"error" => "no values for metric in range", "request_id" => request_id}) + "\n"
           else
             value = aggregator.aggregate(points)
-            if ((min && (value < min)) || (max && (value > max)))
+            if (min && (value < min)) || (max && (value > max))
               log(at: "out_of_range", min: min, max: max, value: value, num_points: points.count)
               status 500
             else
@@ -211,7 +210,7 @@ module Umpire
     end
 
     def self.base_log_data
-      { scope: Thread.current[:scope] }.freeze
+      {scope: Thread.current[:scope]}.freeze
     end
 
     def self.log(data, &blk)

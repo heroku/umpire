@@ -1,3 +1,3 @@
-class MetricNotFound < Exception ; end
-class MetricServiceRequestFailed < Exception ; end
-class MetricNotComposite < RuntimeError ; end
+class MetricNotFound < RuntimeError; end
+class MetricServiceRequestFailed < RuntimeError; end
+class MetricNotComposite < RuntimeError; end

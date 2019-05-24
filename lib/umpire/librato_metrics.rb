@@ -20,12 +20,12 @@ module Umpire
     def default_options
       {
         summarize_sources: true,
-        breakout_sources: false
+        breakout_sources: false,
       }
     end
 
     def determine_from(metric, options)
-      if options.has_key?(:from)
+      if options.key?(:from)
         options.delete(:from)
       elsif metric.include?(":")
         from = metric.split(":")[1]
@@ -39,20 +39,18 @@ module Umpire
       parts = metric.split(":")
       if parts.length == 3
         parts[2]
-      else
-        nil
       end
     end
 
-    def get_values_for_range(metric, range, options={})
+    def get_values_for_range(metric, range, options = {})
       options = default_options.merge(options)
 
       from = determine_from(metric, options)
 
-      options.merge!(start_time: start_time(range))
+      options[:start_time] = start_time(range)
 
-      if group_by = determine_group_by(metric)
-        options.merge!(group_by: group_by)
+      if (group_by = determine_group_by(metric))
+        options[:group_by] = group_by
       end
 
       metric = metric.split(":").first
@@ -69,9 +67,9 @@ module Umpire
 
       # This is the response you get if you try to request
       # a handmade composite metric.
-      if all = results.kind_of?(Array) && results.size > 0 && results[0]['series']
+      if (all = results.is_a?(Array) && results.size > 0 && results[0]["series"])
         all.map { |h| h[from] }
-      elsif all = results.kind_of?(Hash) && results['all']
+      elsif (all = results.is_a?(Hash) && results["all"])
         all.map { |h| h[from] }
       else
         []
@@ -82,7 +80,7 @@ module Umpire
       raise MetricServiceRequestFailed, e.message
     end
 
-    def compose_values_for_range(function, metrics, range, options={})
+    def compose_values_for_range(function, metrics, range, options = {})
       metric_limit = function == "sum" ? 4 : 2
 
       raise MetricNotComposite, "too few metrics" if metrics.nil? || metrics.size < 2
@@ -126,9 +124,9 @@ module CompositeMetric
 
     def initialize(*values)
       first = values.shift
-      @value = first.zip(*values).map do |items|
-        items.inject(0) { |sum, i| sum += i.to_f }
-      end
+      @value = first.zip(*values).map { |items|
+        items.inject(0) { |sum, i| sum + i.to_f }
+      }
     end
   end
 
@@ -136,9 +134,9 @@ module CompositeMetric
     attr_reader :value
 
     def initialize(*values)
-      @value = values[0].zip(values[1]).map do |v1, v2|
+      @value = values[0].zip(values[1]).map { |v1, v2|
         v1.to_f / v2 unless v2.nil? || v2 == 0
-      end.compact
+      }.compact
     end
   end
 
@@ -146,9 +144,9 @@ module CompositeMetric
     attr_reader :value
 
     def initialize(*values)
-      @value = values[0].zip(values[1]).map do |v1, v2|
+      @value = values[0].zip(values[1]).map { |v1, v2|
         v1 * v2 unless v2.nil?
-      end.compact
+      }.compact
     end
   end
 
@@ -156,10 +154,9 @@ module CompositeMetric
     attr_reader :value
 
     def initialize(*values)
-      @value = values[0].zip(values[1]).map do |items|
-        items.inject { |diff, i| diff -= i.to_f }
-      end
+      @value = values[0].zip(values[1]).map { |items|
+        items.inject { |diff, i| diff - i.to_f }
+      }
     end
   end
 end
-

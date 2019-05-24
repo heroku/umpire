@@ -7,7 +7,7 @@ module Umpire
 
     def self.log(data, &blk)
       if Config.deploy == "test"
-        blk.call if blk
+        blk&.call
       else
         Scrolls.log(BASE_DATA.merge(data), &blk)
       end

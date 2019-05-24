@@ -11,9 +11,9 @@ describe Umpire::Instruments do
 
     it "should log relevant values when calling external apis" do
       stub_request(:get, "#{graphite_url}#{graphite_path}?#{graphite_query}")
-        .to_return(:body => [{"target"=>metric, "datapoints"=>[[4.47, 1348851060]]}].to_json)
+        .to_return(body: [{"target" => metric, "datapoints" => [[4.47, 1348851060]]}].to_json)
 
-      Umpire::Instruments::Api.should_receive(:log) do |data, &blk|
+      Umpire::Instruments::Api.should_receive(:log) { |data, &blk|
         case data[:name]
         when "excon.request"
           data.keys.sort.should eq([:name, :host, :path, :query].sort)
@@ -25,16 +25,16 @@ describe Umpire::Instruments do
           data[:status].should eq(200)
         end
         blk.call
-      end.at_least(:once)
+      }.at_least(:once)
 
       Umpire::Graphite.get_values_for_range(graphite_url, metric, range)
     end
 
     it "should log errors when external apis fail" do
       stub_request(:get, "#{graphite_url}#{graphite_path}?#{graphite_query}")
-        .to_return(:body => {:error => "on noes"}.to_json, :status => 500)
+        .to_return(body: {error: "on noes"}.to_json, status: 500)
 
-      Umpire::Instruments::Api.should_receive(:log) do |data, &blk|
+      Umpire::Instruments::Api.should_receive(:log) { |data, &blk|
         case data[:name]
         when "excon.error"
           data.keys.sort.should eq([:name, :error_class, :error_message].sort)
@@ -42,7 +42,7 @@ describe Umpire::Instruments do
           data[:error_message].should match(/InternalServerError/)
         end
         blk.call
-      end.at_least(:once)
+      }.at_least(:once)
 
       expect { Umpire::Graphite.get_values_for_range(graphite_url, metric, range) }.to raise_error(MetricServiceRequestFailed)
     end
