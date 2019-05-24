@@ -45,7 +45,7 @@ module Umpire
     end
 
     def self.find_scope_by_key(value)
-      env = ENV.find { |k, v| k =~ /\AAPI_KEY/ && v == value }
+      env = ENV.find { |k, v| k.start_with?("API_KEY") && v == value }
       return if env.nil?
 
       matches = env[0].match(/\A(?:API_KEY?)(_[A-Z]+)?(_DEPRECATED)?\z/)
