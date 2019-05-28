@@ -68,6 +68,7 @@ GEM
       rubocop (~> 0.67.1)
     tilt (2.0.8)
     unicode-display_width (1.5.0)
+    uri-handler (1.0.2)
     webmock (1.16.1)
       addressable (>= 2.2.7)
       crack (>= 0.3.2)
@@ -91,6 +92,7 @@ DEPENDENCIES
   scrolls (= 0.3.3)
   sinatra (= 1.4.8)
   standard
+  uri-handler
   webmock
   yajl-ruby
 

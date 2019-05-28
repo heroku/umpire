@@ -13,6 +13,7 @@ gem "excon"
 gem "scrolls", "=0.3.3"
 gem "rollbar"
 gem "pry"
+gem "uri-handler"
 
 group :development, :test do
   gem "rack-test"

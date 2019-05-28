@@ -12,8 +12,10 @@ module Umpire
       raise MetricServiceRequestFailed, e.message
     end
 
+    # rubocop: disable Lint/UriEscapeUnescape
     def url(graphite_url, metric, range)
-      URI.encode(URI.decode("#{graphite_url}/render/?target=#{metric}&format=json&from=-#{range}s"))
+      URI.escape(URI.unescape("#{graphite_url}/render/?target=#{metric}&format=json&from=-#{range}s"))
     end
+    # rubocop: enable Lint/UriEscapeUnescape
   end
 end
