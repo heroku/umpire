@@ -27,7 +27,7 @@ GEM
       method_source (~> 0.8.1)
       slop (~> 3.4)
     psych (3.1.0)
-    puma (3.12.2)
+    puma (3.12.3)
     rack (1.6.12)
     rack-protection (1.5.5)
       rack
