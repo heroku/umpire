@@ -37,7 +37,7 @@ GEM
       rack (>= 1.0)
     rack-timeout (0.3.2)
     rainbow (3.0.0)
-    rake (10.1.1)
+    rake (12.3.3)
     rollbar (2.13.3)
       multi_json
     rspec (2.14.1)
