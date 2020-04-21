@@ -19,6 +19,7 @@ group :development, :test do
   gem "rack-test"
   gem "rake", "~> 12.3.3"
   gem "rspec"
+  gem "rspec-rails"
   gem "webmock"
   gem "standard"
 end
