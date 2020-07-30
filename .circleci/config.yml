@@ -22,5 +22,5 @@ jobs:
       - run:
           name: Which bundler?
           command: bundle -v
-      - ruby/bundle-install
+      - ruby/install-deps
       - run: bundle exec rake
