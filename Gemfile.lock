@@ -27,7 +27,7 @@ GEM
       method_source (~> 0.8.1)
       slop (~> 3.4)
     psych (3.1.0)
-    puma (3.12.4)
+    puma (3.12.6)
     rack (1.6.12)
     rack-protection (1.5.5)
       rack
@@ -86,7 +86,7 @@ DEPENDENCIES
   excon
   librato-metrics (~> 1.3.0)
   pry
-  puma (~> 3.12.4)
+  puma (~> 3.12.6)
   rack (~> 1.6)
   rack-ssl
   rack-test
