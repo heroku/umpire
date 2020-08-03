@@ -1,0 +1,26 @@
+version: 2.1
+orbs:
+  ruby: circleci/ruby@1.0.7
+
+jobs:
+  build:
+    docker:
+      - image: circleci/ruby:2.4.5
+        environment:
+          APP: "umpire-test"
+          DEPLOY: "test"
+          API_KEY: "test-key"
+          FORCE_HTTPS: "false"
+          LIBRATO_KEY: "test-key"
+          LIBRATO_EMAIL: "test@example.com"
+          API_KEY_NAMED: "test-key"
+          ROLLBAR_ACCESS_TOKEN: "test-token"
+
+    executor: ruby/default
+    steps:
+      - checkout
+      - run:
+          name: Which bundler?
+          command: bundle -v
+      - ruby/install-deps
+      - run: bundle exec rake
