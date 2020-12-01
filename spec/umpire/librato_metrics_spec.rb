@@ -33,7 +33,7 @@ describe Umpire::LibratoMetrics do
       data = {"all" => [
         {"value" => 1, "sum_means" => 10},
         {"value" => 2, "sum_means" => 20},
-        {"value" => 365, "sum_means" => 3650},
+        {"value" => 365, "sum_means" => 3650}
       ]}
       client_double.should_receive(:fetch) { data }
       Umpire::LibratoMetrics.get_values_for_range("foo", 60, {from: :sum_means}).should eq([10, 20, 3650])
@@ -44,7 +44,7 @@ describe Umpire::LibratoMetrics do
         data = {"all" => [
           {"value" => 1, "sum_means" => 10},
           {"value" => 2, "sum_means" => 20},
-          {"value" => 365, "sum_means" => 3650},
+          {"value" => 365, "sum_means" => 3650}
         ]}
         client_double.should_receive(:fetch).with("foo", summarize_sources: true, breakout_sources: false, start_time: Time.now.to_i - 60) { data }
         Umpire::LibratoMetrics.get_values_for_range("foo:sum_means", 60).should eq([10, 20, 3650])
@@ -54,7 +54,7 @@ describe Umpire::LibratoMetrics do
         data = {"all" => [
           {"value" => 1, "sum_means" => 10},
           {"value" => 2, "sum_means" => 20},
-          {"value" => 365, "sum_means" => 3650},
+          {"value" => 365, "sum_means" => 3650}
         ]}
         client_double.should_receive(:fetch).with("foo", summarize_sources: true, breakout_sources: false, start_time: Time.now.to_i - 60, group_by: "sum") { data }
         Umpire::LibratoMetrics.get_values_for_range("foo:sum_means:sum", 60).should eq([10, 20, 3650])

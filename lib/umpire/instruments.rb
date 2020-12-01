@@ -19,7 +19,7 @@ module Umpire
           end
 
           log(lparams) do
-            yield if block_given?
+            yield if blk
           end
         end
 

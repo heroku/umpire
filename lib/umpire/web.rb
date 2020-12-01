@@ -11,8 +11,7 @@ module Umpire
     disable :show_exceptions
 
     use Rack::SSL if Config.force_https?
-    use Rack::Timeout unless test?
-    Rack::Timeout.timeout = 29
+    use Rack::Timeout, service_timeout: 5, wait_timeout: false unless test?
 
     configure do
       Signal.trap("TERM") do
@@ -22,7 +21,7 @@ module Umpire
 
       Rollbar.configure do |config|
         config.access_token = ENV["ROLLBAR_ACCESS_TOKEN"]
-        config.environment  = ENV["DEPLOY"]
+        config.environment = ENV["DEPLOY"]
       end
     end
 
@@ -97,7 +96,7 @@ module Umpire
 
       def fetch_points(params)
         metric = params["metric"]
-        range = (params["range"]&.to_i)
+        range = params["range"]&.to_i
 
         if use_librato_backend?
           compose = params["compose"]
@@ -124,8 +123,6 @@ module Umpire
 
       def create_aggregator(aggregation_method)
         case aggregation_method
-        when "avg"
-          Aggregator::Avg.new
         when "sum"
           Aggregator::Sum.new
         when "min"
@@ -149,8 +146,8 @@ module Umpire
 
       params["metric"] = params["metric"].strip if params["metric"]
 
-      min = (params["min"]&.to_f)
-      max = (params["max"]&.to_f)
+      min = params["min"]&.to_f
+      max = params["max"]&.to_f
 
       empty_ok = !!params["empty_ok"]
 
