@@ -49,7 +49,7 @@ module Umpire
       return if env.nil?
 
       matches = env[0].match(/\A(?:API_KEY?)(_[A-Z]+)?(_DEPRECATED)?\z/)
-      name    = matches.captures.compact
+      name = matches.captures.compact
 
       if name.empty? || name[0].include?("DEPRECATED")
         name.unshift("global")

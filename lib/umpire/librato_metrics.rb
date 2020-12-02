@@ -20,7 +20,7 @@ module Umpire
     def default_options
       {
         summarize_sources: true,
-        breakout_sources: false,
+        breakout_sources: false
       }
     end
 
@@ -67,9 +67,7 @@ module Umpire
 
       # This is the response you get if you try to request
       # a handmade composite metric.
-      if (all = results.is_a?(Array) && results.size > 0 && results[0]["series"])
-        all.map { |h| h[from] }
-      elsif (all = results.is_a?(Hash) && results["all"])
+      if (all = results.is_a?(Array) && results.size > 0 && results[0]["series"]) || (all = results.is_a?(Hash) && results["all"])
         all.map { |h| h[from] }
       else
         []
