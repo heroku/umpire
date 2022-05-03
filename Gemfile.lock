@@ -30,7 +30,7 @@ GEM
     public_suffix (4.0.6)
     puma (3.12.6)
     rack (2.2.3)
-    rack-protection (2.0.2)
+    rack-protection (2.2.0)
       rack
     rack-ssl (1.4.1)
       rack
@@ -70,12 +70,12 @@ GEM
       rubocop (>= 0.90.0, < 2.0)
       rubocop-ast (>= 0.4.0)
     ruby-progressbar (1.10.1)
-    ruby2_keywords (0.0.2)
+    ruby2_keywords (0.0.5)
     scrolls (0.3.3)
-    sinatra (2.0.2)
+    sinatra (2.2.0)
       mustermann (~> 1.0)
-      rack (~> 2.0)
-      rack-protection (= 2.0.2)
+      rack (~> 2.2)
+      rack-protection (= 2.2.0)
       tilt (~> 2.0)
     standard (0.10.1)
       rubocop (= 1.4.2)
@@ -105,7 +105,7 @@ DEPENDENCIES
   rollbar
   rspec
   scrolls (= 0.3.3)
-  sinatra (= 2.0.2)
+  sinatra (= 2.2.0)
   standard
   uri-handler
   webmock
