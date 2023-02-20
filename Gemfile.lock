@@ -19,7 +19,7 @@ GEM
     method_source (1.0.0)
     multi_json (1.15.0)
     multipart-post (2.1.1)
-    mustermann (1.1.1)
+    mustermann (2.0.2)
       ruby2_keywords (~> 0.0.1)
     nio4r (2.5.8)
     parallel (1.20.1)
@@ -32,7 +32,7 @@ GEM
     puma (4.3.12)
       nio4r (~> 2.0)
     rack (2.2.3)
-    rack-protection (2.0.2)
+    rack-protection (2.2.3)
       rack
     rack-ssl (1.4.1)
       rack
@@ -72,17 +72,17 @@ GEM
       rubocop (>= 0.90.0, < 2.0)
       rubocop-ast (>= 0.4.0)
     ruby-progressbar (1.10.1)
-    ruby2_keywords (0.0.2)
+    ruby2_keywords (0.0.5)
     scrolls (0.3.3)
-    sinatra (2.0.2)
-      mustermann (~> 1.0)
-      rack (~> 2.0)
-      rack-protection (= 2.0.2)
+    sinatra (2.2.3)
+      mustermann (~> 2.0)
+      rack (~> 2.2)
+      rack-protection (= 2.2.3)
       tilt (~> 2.0)
     standard (0.10.1)
       rubocop (= 1.4.2)
       rubocop-performance (= 1.9.1)
-    tilt (2.0.10)
+    tilt (2.1.0)
     unicode-display_width (1.7.0)
     uri-handler (1.0.2)
     webmock (3.10.0)
@@ -107,7 +107,7 @@ DEPENDENCIES
   rollbar
   rspec
   scrolls (= 0.3.3)
-  sinatra (= 2.0.2)
+  sinatra (= 2.2.3)
   standard
   uri-handler
   webmock
