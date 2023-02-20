@@ -4,6 +4,15 @@ on:
 jobs:
   build:
     runs-on: sfdc-hk-ubuntu-latest
+    env:
+      APP: "umpire-test"
+      DEPLOY: "test"
+      API_KEY: "test-key"
+      FORCE_HTTPS: "false"
+      LIBRATO_KEY: "test-key"
+      LIBRATO_EMAIL: "test@example.com"
+      API_KEY_NAMED: "test-key"
+      ROLLBAR_ACCESS_TOKEN: "test-token"
     steps:
     - uses: actions/checkout@v2
     - name: Set up Ruby
@@ -14,13 +23,5 @@ jobs:
     - run: bundle check || bundle install
       env:
         BUNDLE_DEPLOYMENT: true
-        APP: "umpire-test"
-        DEPLOY: "test"
-        API_KEY: "test-key"
-        FORCE_HTTPS: "false"
-        LIBRATO_KEY: "test-key"
-        LIBRATO_EMAIL: "test@example.com"
-        API_KEY_NAMED: "test-key"
-        ROLLBAR_ACCESS_TOKEN: "test-token"
     - run: |-
         bundle exec rake
