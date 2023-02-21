@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-ruby "2.4.5"
+ruby "2.7.7"
 
 gem "rack", "~> 2.1", ">= 2.1.4"
 gem "yajl-ruby"

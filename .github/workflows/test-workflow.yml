@@ -1,0 +1,27 @@
+name: heroku/umpire/build_and_test
+on:
+  push:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      APP: "umpire-test"
+      DEPLOY: "test"
+      API_KEY: "test-key"
+      FORCE_HTTPS: "false"
+      LIBRATO_KEY: "test-key"
+      LIBRATO_EMAIL: "test@example.com"
+      API_KEY_NAMED: "test-key"
+      ROLLBAR_ACCESS_TOKEN: "test-token"
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '2.7.7'
+        bundler-cache: true
+    - run: bundle check || bundle install
+      env:
+        BUNDLE_DEPLOYMENT: true
+    - run: |-
+        bundle exec rake
