@@ -3,7 +3,7 @@ on:
   push:
 jobs:
   build:
-    runs-on: sfdc-hk-ubuntu-latest
+    runs-on: ubuntu-latest
     env:
       APP: "umpire-test"
       DEPLOY: "test"
