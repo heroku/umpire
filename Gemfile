@@ -2,7 +2,7 @@ source "https://rubygems.org"
 
 ruby "2.4.5"
 
-gem "rack", "~> 2.1", ">= 2.1.4"
+gem "rack", "~> 2.2"
 gem "yajl-ruby"
 gem "librato-metrics", "~> 1.3.0"
 gem "sinatra", "2.0.2"
