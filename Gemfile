@@ -2,7 +2,7 @@ source "https://rubygems.org"
 
 ruby "2.4.5"
 
-gem "rack", "~> 2.1", ">= 2.1.4"
+gem "rack", "~> 2.2", ">= 2.2.6.3"
 gem "yajl-ruby"
 gem "librato-metrics", "~> 1.3.0"
 gem "sinatra", "2.0.2"
@@ -16,7 +16,7 @@ gem "pry"
 gem "uri-handler"
 
 group :development, :test do
-  gem "rack-test", ">= 0.6.2"
+  gem "rack-test", ">= 1.1.0"
   gem "rake", "~> 12.3.3"
   gem "rspec"
   gem "webmock"
